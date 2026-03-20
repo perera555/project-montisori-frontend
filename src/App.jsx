@@ -1,121 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
+import UpdateStudent from "../pages/admin/updatestudent";
+import AddStudent from "../pages/admin/addstudent";
+import Student from "../pages/admin/student";
+import AdminGallery from "../pages/admin/admingallery";
+import AdminPage from "../pages/admin/adminpage";
+import Gallery from "../pages/client/gallery";
+import HomePage from "../pages/client/homepage";
+import AddTeacher from "../pages/admin/addteachers";
+import AdminTeachers from "../pages/admin/teacher";
+import UpdateTeacher from "../pages/admin/updateteachers";
+import Announcement from "../pages/admin/adminAnnouncemnt";
+import AnnouncementClient from "../pages/client/announcemntClient";
+import LoginPage from "../pages/client/login";
+import RegisterPage from "../pages/client/register";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+      <BrowserRouter>
+        <Toaster position="top-right" />
 
-      <div className="ticks"></div>
+        <Routes>
+          {/* CLIENT */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/announcements" element={<AnnouncementClient />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {/* LOGIN */}
+          <Route path="/login" element={<LoginPage />} />
+               <Route path="/register" element={<RegisterPage/>} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          {/* ADMIN */}
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/gallery" element={<AdminGallery />} />
+
+          {/* STUDENTS */}
+          <Route path="/admin/students" element={<Student />} />
+          <Route path="/admin/students/add" element={<AddStudent />} />
+          <Route path="/admin/students/update/:id" element={<UpdateStudent />} />
+
+          {/* TEACHERS */}
+          <Route path="/admin/teachers" element={<AdminTeachers />} />
+          <Route path="/admin/teachers/add" element={<AddTeacher />} />
+          <Route path="/admin/teachers/update/:id" element={<UpdateTeacher />} />
+
+          {/* ANNOUNCEMENTS */}
+          <Route path="/admin/announcements" element={<Announcement />} />
+
+          {/* 404 */}
+          <Route
+            path="*"
+            element={
+              <div className="flex items-center justify-center h-screen">
+                <h1 className="text-3xl font-bold">404 - Page Not Found</h1>
+              </div>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
+  );
 }
 
-export default App
+export default App;
