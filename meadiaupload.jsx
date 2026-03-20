@@ -1,73 +1,40 @@
-import { useState } from "react";
+
 import { createClient } from "@supabase/supabase-js";
-import toast from "react-hot-toast";
 
-export default function MediaUploadPage() {
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
+const supabaseUrl = "https://jltipjurayempptahiun.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsdGlwanVyYXllbXBwdGFoaXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NzU3NDIsImV4cCI6MjA4OTU1MTc0Mn0.L_NCXDAUEOiOklPYpeqeF-mTyEJIoKkxdZ4LqHdYqV8";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // 🔹 Supabase client
-  const supabase = createClient(
-    "https://uscibyluognuwlsqkvll.supabase.co",
-    "YOUR_PUBLIC_ANON_KEY"
-  );
+// SINGLE
+export async function uploadMedia(file) {
+  const fileName = `${Date.now()}_${file.name}`;
 
-  // 🔹 Upload function
-  async function handleFileUpload() {
-    if (!file) {
-      toast.error("No file selected");
-      return;
-    }
+  const { error } = await supabase.storage
+    .from("images")
+    .upload(fileName, file);
 
-    try {
-      setUploading(true);
+  if (error) throw error;
 
-      const timeStamp = new Date().getTime();
-      const newFileName = `${timeStamp}_${file.name}`;
+  const { data } = supabase.storage
+    .from("images")
+    .getPublicUrl(fileName);
 
-      const { error } = await supabase.storage
-        .from("images")
-        .upload(newFileName, file, {
-          cacheControl: "3600",
-          upsert: false,
-        });
+  return data.publicUrl;
+}
 
-      if (error) throw error;
+// MULTIPLE (🔥 FIXED)
+export async function uploadMultipleMedia(files) {
+  // ✅ ALWAYS CONVERT
+  const fileArray = Array.from(files || []);
 
-      const { data } = supabase.storage
-        .from("images")
-        .getPublicUrl(newFileName);
+  if (!fileArray.length) return [];
 
-      toast.success("Uploaded successfully!");
-      console.log("File URL:", data.publicUrl);
+  const results = [];
 
-    } catch (error) {
-      console.error(error);
-      toast.error("Upload failed");
-    } finally {
-      setUploading(false);
-    }
+  for (const file of fileArray) {
+    const url = await uploadMedia(file);
+    results.push(url);
   }
 
-  return (
-    <div className="w-full h-screen flex flex-col justify-center items-center gap-4">
-      
-      <h1 className="text-2xl font-bold">Media Upload</h1>
-
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
-        className="border p-2"
-      />
-
-      <button
-        onClick={handleFileUpload}
-        disabled={uploading}
-        className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-600 disabled:opacity-50"
-      >
-        {uploading ? "Uploading..." : "Upload File"}
-      </button>
-
-    </div>
-  );
+  return results;
 }

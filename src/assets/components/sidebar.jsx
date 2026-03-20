@@ -6,18 +6,26 @@ import {
   Image,
   Megaphone,
   LogOut,
+  Home,
 } from "lucide-react";
 
 export default function Sidebar() {
   const location = useLocation();
 
   const menu = [
+    { name: "Home", path: "/", icon: <Home size={18} /> },
     { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={18} /> },
+    { name: "Users", path: "/admin/users", icon: <Users size={18} /> },
     { name: "Students", path: "/admin/students", icon: <Users size={18} /> },
     { name: "Teachers", path: "/admin/teachers", icon: <UserCheck size={18} /> },
     { name: "Gallery", path: "/admin/gallery", icon: <Image size={18} /> },
     { name: "Announcements", path: "/admin/announcements", icon: <Megaphone size={18} /> },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("role");
+    window.location.href = "/";
+  };
 
   return (
     <div className="w-64 h-screen bg-gray-900 text-white flex flex-col justify-between p-4">
@@ -37,10 +45,7 @@ export default function Sidebar() {
                 <Link
                   to={item.path}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition
-                    ${isActive
-                      ? "bg-blue-500"
-                      : "hover:bg-gray-800"
-                    }`}
+                    ${isActive ? "bg-blue-500" : "hover:bg-gray-800"}`}
                 >
                   {item.icon}
                   {item.name}
@@ -53,12 +58,14 @@ export default function Sidebar() {
 
       {/* BOTTOM */}
       <div>
-        <button className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-red-500 transition">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-red-500 transition"
+        >
           <LogOut size={18} />
           Logout
         </button>
       </div>
-
     </div>
   );
 }

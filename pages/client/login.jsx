@@ -9,6 +9,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // ✅ FIX: fallback if env not set
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   /* ENTER KEY */
   function handleKeyDown(e) {
     if (e.key === "Enter") {
@@ -22,23 +25,19 @@ export default function LoginPage() {
     onSuccess: async (response) => {
       try {
         const res = await axios.post(
-          import.meta.env.VITE_API_URL + "/api/users/google-login",
+          `${API_URL}/api/users/google-login`,
           { token: response.access_token }
         );
 
-        // Save data
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
 
         toast.success("Login successful 🌱");
 
-        // ROLE BASED REDIRECT
-        const role = res.data.user.role;
-
-        if (role === "admin") {
+        if (res.data.user.role === "admin") {
           navigate("/admin");
         } else {
-          navigate("/client");
+          navigate("/");
         }
       } catch (e) {
         console.error(e);
@@ -51,34 +50,37 @@ export default function LoginPage() {
   async function login() {
     try {
       const response = await axios.post(
-        import.meta.env.VITE_API_URL + "/api/users/login",
+        `${API_URL}/api/users/login`,
         { email, password }
       );
 
-      // Save data
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       toast.success("Welcome back! 🌱");
 
-      // ROLE BASED REDIRECT
-      const role = response.data.user.role;
-
-      if (role === "admin") {
+      if (response.data.user.role === "admin") {
         navigate("/admin");
       } else {
-        navigate("/client");
+        navigate("/");
       }
     } catch (e) {
-      console.error(e);
-      toast.error("Login Failed, check credentials");
+      console.error("LOGIN ERROR:", e.response || e);
+
+      if (e.response?.status === 404) {
+        toast.error("API route not found (check backend)");
+      } else if (e.response?.status === 401) {
+        toast.error("Invalid email or password");
+      } else {
+        toast.error("Login Failed");
+      }
     }
   }
 
   return (
     <div className="w-full h-screen flex">
 
-      {/* LEFT SIDE IMAGE */}
+      {/* LEFT IMAGE */}
       <div className="hidden lg:block w-1/2 relative">
         <img
           src="https://images.unsplash.com/photo-1588072432836-e10032774350"
@@ -97,7 +99,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* RIGHT SIDE FORM */}
+      {/* RIGHT FORM */}
       <div className="w-full lg:w-1/2 flex justify-center items-center bg-blue-50 px-6">
         <div className="w-full max-w-md bg-white p-10 rounded-2xl shadow-xl">
 
@@ -135,7 +137,7 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* FORGOT PASSWORD */}
+          {/* FORGOT */}
           <div className="text-right mb-6">
             <Link
               to="/forgot-password"
@@ -145,7 +147,7 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* LOGIN BUTTON */}
+          {/* LOGIN */}
           <button
             onClick={login}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
@@ -153,7 +155,7 @@ export default function LoginPage() {
             Login
           </button>
 
-          {/* GOOGLE LOGIN */}
+          {/* GOOGLE */}
           <button
             onClick={googleLogin}
             className="w-full mt-4 bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition"

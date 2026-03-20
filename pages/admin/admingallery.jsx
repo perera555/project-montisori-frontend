@@ -1,146 +1,158 @@
 import React, { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import MediaUploadPage from "../../meadiaupload";
+import { uploadMultipleMedia } from "../../meadiaupload";
 
 export default function AdminGallery() {
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
-
   const [activityImages, setActivityImages] = useState([]);
   const [conversationImages, setConversationImages] = useState([]);
+  const [saving, setSaving] = useState(false);
 
-  const [uploading, setUploading] = useState(false);
-
-  // 🔹 Upload handler (reusable)
-  const handleFileUpload = async (file, type) => {
-    if (!file) {
-      toast.error("No file selected");
-      return;
+  // ================= UPLOAD =================
+  const handleMultipleUpload = async (files, type) => {
+    if (!files || files.length === 0) {
+      return toast.error("No files selected");
     }
 
     try {
-      setUploading(true);
+      const fileArray = Array.from(files);
 
-      const url = await MediaUploadPage(file);
+      const validFiles = fileArray.filter((file) =>
+        file.type.startsWith("image/")
+      );
+
+      const urls = await uploadMultipleMedia(validFiles);
 
       if (type === "activity") {
-        setActivityImages((prev) => [...prev, url]);
+        setActivityImages((prev) =>
+          Array.from(new Set([...prev, ...urls]))
+        );
       } else {
-        setConversationImages((prev) => [...prev, url]);
+        setConversationImages((prev) =>
+          Array.from(new Set([...prev, ...urls]))
+        );
       }
 
-      toast.success("Image uploaded!");
+      toast.success("Images uploaded!");
     } catch (err) {
       console.error(err);
       toast.error("Upload failed");
-    } finally {
-      setUploading(false);
     }
   };
 
+  // ================= SAVE =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!year || !month || (activityImages.length === 0 && conversationImages.length === 0)) {
-      toast.error("Fill all fields and upload images");
-      return;
-    }
+    if (!year || !month) return toast.error("Please select date");
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/gallery",
-        {
-          year,
-          month,
-          activityImages,
-          conversationImages,
-        },
-        {
-          headers: {
-            Authorization: "Bearer YOUR_TOKEN_HERE",
-          },
-        }
-      );
+      setSaving(true);
 
-      toast.success("Gallery uploaded!");
+      await axios.post("http://localhost:5000/api/gallery", {
+        year,
+        month,
+        activityImages,
+        conversationImages,
+      });
 
-      setYear("");
-      setMonth("");
-      setActivityImages([]);
-      setConversationImages([]);
-    } catch (err) {
-      console.error(err);
-      toast.error("Error uploading gallery");
+      toast.success("Gallery saved!");
+    } catch {
+      toast.error("Save failed");
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6 flex items-center justify-center">
-      <div className="w-full max-w-2xl bg-white p-8 rounded-3xl shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-6">
+      <div className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-lg space-y-6">
 
-        <h1 className="text-3xl font-extrabold text-center mb-6 text-gray-800">
-          📸 Upload Gallery
-        </h1>
+        <h2 className="text-2xl font-bold text-center text-gray-800">
+          Upload Gallery
+        </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
 
-          <input
-            type="number"
-            placeholder="Year"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400"
-          />
-
-          <input
-            type="text"
-            placeholder="Month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            className="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-400"
-          />
-
-          {/* 🎨 ACTIVITY UPLOAD */}
+          {/* DATE */}
           <div>
-            <p className="font-semibold mb-2">🎨 Activity Images</p>
+            <label className="block mb-1 text-sm font-medium text-gray-600">
+              Select Month
+            </label>
+            <input
+              type="month"
+              className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-400 outline-none"
+              onChange={(e) => {
+                const [y, m] = e.target.value.split("-");
+                setYear(y);
+                setMonth(
+                  new Date(y, m - 1).toLocaleString("default", {
+                    month: "long",
+                  })
+                );
+              }}
+            />
+          </div>
+
+          {/* ACTIVITY UPLOAD */}
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-600">
+              Activity Images
+            </label>
             <input
               type="file"
-              onChange={(e) => handleFileUpload(e.target.files[0], "activity")}
-              className="w-full p-2 border rounded-xl"
+              multiple
+              className="w-full border p-2 rounded-lg cursor-pointer"
+              onChange={(e) =>
+                handleMultipleUpload(e.target.files, "activity")
+              }
             />
 
-            <div className="grid grid-cols-3 gap-2 mt-2">
+            <div className="grid grid-cols-4 gap-2 mt-3">
               {activityImages.map((img, i) => (
-                <img key={i} src={img} className="h-20 object-cover rounded" />
+                <img
+                  key={i}
+                  src={img}
+                  className="h-20 w-full object-cover rounded-lg shadow"
+                />
               ))}
             </div>
           </div>
 
-          {/* 🗣️ CONVERSATION UPLOAD */}
+          {/* CONVERSATION UPLOAD */}
           <div>
-            <p className="font-semibold mb-2">🗣️ Conversation Images</p>
+            <label className="block mb-1 text-sm font-medium text-gray-600">
+              Conversation Images
+            </label>
             <input
               type="file"
-              onChange={(e) => handleFileUpload(e.target.files[0], "conversation")}
-              className="w-full p-2 border rounded-xl"
+              multiple
+              className="w-full border p-2 rounded-lg cursor-pointer"
+              onChange={(e) =>
+                handleMultipleUpload(e.target.files, "conversation")
+              }
             />
 
-            <div className="grid grid-cols-3 gap-2 mt-2">
+            <div className="grid grid-cols-4 gap-2 mt-3">
               {conversationImages.map((img, i) => (
-                <img key={i} src={img} className="h-20 object-cover rounded" />
+                <img
+                  key={i}
+                  src={img}
+                  className="h-20 w-full object-cover rounded-lg shadow"
+                />
               ))}
             </div>
           </div>
 
+          {/* SUBMIT */}
           <button
             type="submit"
-            disabled={uploading}
-            className="w-full bg-blue-600 text-white py-3 rounded-xl"
+            className="w-full bg-blue-500 hover:bg-blue-600 transition text-white font-semibold py-2 rounded-lg shadow"
           >
-            🚀 Submit Gallery
+            {saving ? "Saving..." : "Save Gallery"}
           </button>
-
         </form>
       </div>
     </div>
