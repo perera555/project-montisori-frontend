@@ -15,9 +15,12 @@ export default function GalleryPage() {
   const token = localStorage.getItem("token");
   const isAdmin = user?.role === "admin";
 
+  // ✅ FIXED
+  const API_URL = `${import.meta.env.VITE_API_URL}/api/gallery`;
+
   const fetchGallery = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/gallery");
+      const res = await axios.get(API_URL);
       setGallery(res.data.list || []);
     } catch {
       toast.error("Failed to load ❌");
@@ -34,7 +37,8 @@ export default function GalleryPage() {
     if (!window.confirm("Delete this image?")) return;
 
     try {
-      await axios.delete("http://localhost:5000/api/gallery/image", {
+      // ✅ FIXED
+      await axios.delete(`${API_URL}/image`, {
         data: { year, month, image, type },
         headers: {
           Authorization: `Bearer ${token}`,

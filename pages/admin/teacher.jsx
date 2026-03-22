@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Pencil, Phone, Briefcase } from "lucide-react";
 
+// ✅ FIXED: use backend from .env
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/teachers",
+  baseURL: `${import.meta.env.VITE_API_URL}/api/teachers`,
 });
 
 export default function Teachers() {
@@ -71,7 +72,6 @@ export default function Teachers() {
                 shadow-xl hover:shadow-emerald-500/20 
                 transition-all duration-300 hover:-translate-y-2"
               >
-                {/* ✅ FIXED: This no longer blocks clicks */}
                 <div className="absolute inset-0 rounded-3xl opacity-0 
                 group-hover:opacity-100 
                 bg-gradient-to-r from-emerald-400/20 to-green-500/20 

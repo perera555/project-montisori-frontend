@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+// ✅ FIXED: use backend from .env
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/students",
+  baseURL: `${import.meta.env.VITE_API_URL}/api/students`,
 });
 
 export default function Student() {

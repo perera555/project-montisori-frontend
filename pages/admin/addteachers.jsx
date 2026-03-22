@@ -29,7 +29,11 @@ export default function AddTeacher() {
     try {
       setLoading(true);
 
-      await axios.post("http://localhost:5000/api/teachers", form);
+      // ✅ FIXED: use backend from .env
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/teachers`,
+        form
+      );
 
       toast.success("Teacher added successfully 🎉", {
         position: "top-right",

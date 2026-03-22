@@ -51,7 +51,8 @@ export default function AdminGallery() {
     try {
       setSaving(true);
 
-      await axios.post("http://localhost:5000/api/gallery", {
+      // ✅ FIXED: use backend from .env
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/gallery`, {
         year,
         month,
         activityImages,

@@ -23,8 +23,9 @@ export default function UpdateStudent() {
   useEffect(() => {
     const fetchStudent = async () => {
       try {
+        // ✅ FIXED
         const res = await axios.get(
-          `http://localhost:5000/api/students/${id}`
+          `${import.meta.env.VITE_API_URL}/api/students/${id}`
         );
 
         setForm({
@@ -36,7 +37,10 @@ export default function UpdateStudent() {
         });
 
         if (res.data.image) {
-          setPreview(`http://localhost:5000/uploads/${res.data.image}`);
+          // ✅ FIXED
+          setPreview(
+            `${import.meta.env.VITE_API_URL}/uploads/${res.data.image}`
+          );
         }
       } catch (err) {
         toast.error("Failed to load student ❌");
@@ -80,8 +84,9 @@ export default function UpdateStudent() {
         }
       });
 
+      // ✅ FIXED
       await axios.put(
-        `http://localhost:5000/api/students/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/students/${id}`,
         formData,
         {
           headers: {

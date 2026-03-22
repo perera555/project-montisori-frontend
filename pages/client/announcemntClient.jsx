@@ -7,7 +7,8 @@ export default function AnnouncementClient() {
   const [announcements, setAnnouncements] = useState([]);
   const [lang, setLang] = useState("en");
 
-  const API_URL = "http://localhost:5000/api/announcements";
+  // ✅ FIXED: use backend from .env
+  const API_URL = `${import.meta.env.VITE_API_URL}/api/announcements`;
 
   const fetchAnnouncements = async () => {
     try {
@@ -41,7 +42,7 @@ export default function AnnouncementClient() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-gray-100">
       
-      {/* ✅ NAVBAR WITH LANGUAGE */}
+      {/* NAVBAR */}
       <Navbar lang={lang} setLang={setLang} />
 
       <div className="py-10 px-4 mt-[70px]">

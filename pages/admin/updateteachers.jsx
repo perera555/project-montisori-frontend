@@ -8,8 +8,9 @@ import {
   BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 
+// ✅ FIXED: use backend from .env
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/teachers",
+  baseURL: `${import.meta.env.VITE_API_URL}/api/teachers`,
 });
 
 export default function UpdateTeachers() {
@@ -93,9 +94,7 @@ export default function UpdateTeachers() {
               outline-none transition placeholder-transparent"
               placeholder="Name"
             />
-            <label className="absolute left-10 top-3 text-gray-400 text-sm transition-all 
-              peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 
-              peer-focus:-top-2 peer-focus:text-xs peer-focus:text-emerald-400">
+            <label className="absolute left-10 top-3 text-gray-400 text-sm transition-all">
               Name
             </label>
           </div>
@@ -115,7 +114,7 @@ export default function UpdateTeachers() {
               outline-none transition placeholder-transparent"
               placeholder="Experience"
             />
-            <label className="absolute left-10 top-3 text-gray-400 text-sm transition-all">
+            <label className="absolute left-10 top-3 text-gray-400 text-sm">
               Experience
             </label>
           </div>
@@ -135,7 +134,7 @@ export default function UpdateTeachers() {
               outline-none transition placeholder-transparent"
               placeholder="Phone"
             />
-            <label className="absolute left-10 top-3 text-gray-400 text-sm transition-all">
+            <label className="absolute left-10 top-3 text-gray-400 text-sm">
               Phone
             </label>
           </div>

@@ -7,7 +7,8 @@ export default function Announcement() {
   const [announcements, setAnnouncements] = useState([]);
   const [form, setForm] = useState({ title: "", message: "" });
 
-  const API_URL = "http://localhost:5000/api/announcements";
+  // ✅ FIXED: use backend from .env
+  const API_URL = `${import.meta.env.VITE_API_URL}/api/announcements`;
 
   // Fetch announcements
   const fetchAnnouncements = async () => {
