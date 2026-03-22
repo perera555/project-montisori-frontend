@@ -9,7 +9,7 @@ import {
   Home,
 } from "lucide-react";
 
-export default function Sidebar() {
+export default function Sidebar({ logout }) {
   const location = useLocation();
 
   const menu = [
@@ -22,15 +22,9 @@ export default function Sidebar() {
     { name: "Announcements", path: "/admin/announcements", icon: <Megaphone size={18} /> },
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    window.location.href = "/";
-  };
-
   return (
     <div className="w-64 h-screen bg-gray-900 text-white flex flex-col justify-between p-4">
 
-      {/* TOP */}
       <div>
         <h2 className="text-xl font-bold mb-8 text-center">
           Montessori Admin
@@ -44,7 +38,7 @@ export default function Sidebar() {
               <li key={item.name}>
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg
                     ${isActive ? "bg-blue-500" : "hover:bg-gray-800"}`}
                 >
                   {item.icon}
@@ -56,16 +50,13 @@ export default function Sidebar() {
         </ul>
       </div>
 
-      {/* BOTTOM */}
-      <div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-red-500 transition"
-        >
-          <LogOut size={18} />
-          Logout
-        </button>
-      </div>
+      <button
+        onClick={logout}
+        className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-red-500"
+      >
+        <LogOut size={18} />
+        Logout
+      </button>
     </div>
   );
 }

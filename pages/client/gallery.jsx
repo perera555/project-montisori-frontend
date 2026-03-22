@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";
@@ -15,14 +14,29 @@ export default function GalleryPage() {
   const token = localStorage.getItem("token");
   const isAdmin = user?.role === "admin";
 
-  // ✅ FIXED
-  const API_URL = `${import.meta.env.VITE_API_URL}/api/gallery`;
+  // ✅ SAFE API URL
+  const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const API_URL = `${BASE_URL}/api/gallery`;
 
   const fetchGallery = async () => {
     try {
+      console.log("Fetching from:", API_URL);
+
       const res = await axios.get(API_URL);
-      setGallery(res.data.list || []);
-    } catch {
+
+      console.log("API Response:", res.data);
+
+      // ✅ Handle both formats
+      const data = res.data.list || res.data || [];
+
+      if (!Array.isArray(data)) {
+        console.error("Invalid data format");
+        return;
+      }
+
+      setGallery(data);
+    } catch (err) {
+      console.error(err);
       toast.error("Failed to load ❌");
     }
   };
@@ -37,7 +51,6 @@ export default function GalleryPage() {
     if (!window.confirm("Delete this image?")) return;
 
     try {
-      // ✅ FIXED
       await axios.delete(`${API_URL}/image`, {
         data: { year, month, image, type },
         headers: {
@@ -52,7 +65,9 @@ export default function GalleryPage() {
     }
   };
 
-  const grouped = gallery.reduce((acc, item) => {
+  // ✅ GROUP BY YEAR SAFELY
+  const grouped = (gallery || []).reduce((acc, item) => {
+    if (!item?.year) return acc;
     acc[item.year] = acc[item.year] || [];
     acc[item.year].push(item);
     return acc;
@@ -90,6 +105,13 @@ export default function GalleryPage() {
 
           <h1 className="text-4xl text-center mb-10 font-bold">Gallery</h1>
 
+          {/* ✅ EMPTY STATE */}
+          {Object.keys(grouped).length === 0 && (
+            <p className="text-center text-gray-400">
+              No gallery data found 😕
+            </p>
+          )}
+
           {Object.entries(grouped).map(([year, items]) => (
             <div key={year} className="mb-10">
               <h2 className="text-2xl mb-4 border-l-4 border-blue-500 pl-3">
@@ -110,6 +132,7 @@ export default function GalleryPage() {
                       isAdmin={isAdmin}
                       deleteImage={deleteImage}
                       openSlider={openSlider}
+                      BASE_URL={BASE_URL}
                     />
 
                     <ImageSection
@@ -121,6 +144,7 @@ export default function GalleryPage() {
                       isAdmin={isAdmin}
                       deleteImage={deleteImage}
                       openSlider={openSlider}
+                      BASE_URL={BASE_URL}
                     />
                   </div>
                 </div>
@@ -129,10 +153,22 @@ export default function GalleryPage() {
           ))}
         </div>
 
-        {showModal && (
+        {/* ✅ MODAL */}
+        {showModal && selectedImages.length > 0 && (
           <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-            <button onClick={() => setShowModal(false)} className="absolute top-5 right-5 text-white text-3xl">✕</button>
-            <button onClick={prevSlide} className="absolute left-5 text-white text-4xl">◀</button>
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-5 right-5 text-white text-3xl"
+            >
+              ✕
+            </button>
+
+            <button
+              onClick={prevSlide}
+              className="absolute left-5 text-white text-4xl"
+            >
+              ◀
+            </button>
 
             <img
               src={selectedImages[currentIndex]}
@@ -140,7 +176,12 @@ export default function GalleryPage() {
               className="max-h-[80%] max-w-[90%] rounded-lg"
             />
 
-            <button onClick={nextSlide} className="absolute right-5 text-white text-4xl">▶</button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-5 text-white text-4xl"
+            >
+              ▶
+            </button>
           </div>
         )}
       </div>
@@ -158,6 +199,7 @@ function ImageSection({
   isAdmin,
   deleteImage,
   openSlider,
+  BASE_URL,
 }) {
   const sorted = [...(images || [])].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -169,33 +211,43 @@ function ImageSection({
 
       <div className="grid grid-cols-2 gap-4">
         {sorted.length > 0 ? (
-          sorted.map((img, idx) => (
-            <div key={idx} className="relative group rounded-xl overflow-hidden shadow">
-              <motion.img
-                src={img.url}
-                onClick={() =>
-                  openSlider(sorted.map((i) => i.url), idx)
-                }
-                whileHover={{ scale: 1.08 }}
-                className="h-48 w-full object-cover cursor-pointer"
-              />
+          sorted.map((img, idx) => {
+            // ✅ FIX IMAGE URL
+            const imageUrl = img.url.startsWith("http")
+              ? img.url
+              : `${BASE_URL}${img.url}`;
 
-              <div className="absolute bottom-2 left-2 text-white text-xs bg-black/60 px-2 py-1 rounded">
-                {new Date(img.createdAt).toLocaleString()}
-              </div>
-
-              {isAdmin && (
-                <button
+            return (
+              <div
+                key={idx}
+                className="relative group rounded-xl overflow-hidden shadow"
+              >
+                <motion.img
+                  src={imageUrl}
                   onClick={() =>
-                    deleteImage(year, month, img.url, type)
+                    openSlider(sorted.map((i) => i.url), idx)
                   }
-                  className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs rounded"
-                >
-                  Delete
-                </button>
-              )}
-            </div>
-          ))
+                  whileHover={{ scale: 1.08 }}
+                  className="h-48 w-full object-cover cursor-pointer"
+                />
+
+                <div className="absolute bottom-2 left-2 text-white text-xs bg-black/60 px-2 py-1 rounded">
+                  {new Date(img.createdAt).toLocaleString()}
+                </div>
+
+                {isAdmin && (
+                  <button
+                    onClick={() =>
+                      deleteImage(year, month, img.url, type)
+                    }
+                    className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs rounded"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            );
+          })
         ) : (
           <p className="text-gray-400">No images</p>
         )}

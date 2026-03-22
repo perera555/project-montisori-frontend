@@ -1,10 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-hot-toast";
+import { IoArrowBack } from "react-icons/io5";
 
-// ✅ FIXED: use backend from .env
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api/students`,
 });
@@ -22,7 +21,7 @@ export default function AddStudent() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const handleChange = (e) => {
     if (e.target.name === "image") {
@@ -56,15 +55,11 @@ export default function AddStudent() {
         },
       });
 
-      toast.success("Student added successfully 🎉", {
-        position: "top-right",
-      });
-
+      toast.success("Student added successfully 🎉");
       navigate("/admin/students");
     } catch (err) {
       toast.error(
-        err?.response?.data?.message || "Failed to add student ❌",
-        { position: "top-right" }
+        err?.response?.data?.message || "Failed to add student ❌"
       );
     } finally {
       setLoading(false);
@@ -72,16 +67,28 @@ export default function AddStudent() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-slate-100 via-emerald-50 to-cyan-100 px-4">
-      <div className="w-full max-w-md p-8 rounded-3xl shadow-xl bg-white/70 backdrop-blur-lg border border-white/30">
-        
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Add Student
-        </h2>
+    <div className="w-full min-h-screen bg-blue-50 p-6">
 
-        {/* Image Preview */}
-        <div className="flex flex-col items-center mb-4">
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-emerald-400 shadow-md">
+      {/* HEADER */}
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-white p-2 rounded-lg shadow hover:bg-gray-100"
+        >
+          <IoArrowBack size={18} />
+        </button>
+
+        <h1 className="text-3xl font-bold text-blue-700">
+          Add Student 🎓
+        </h1>
+      </div>
+
+      {/* FORM CARD */}
+      <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+
+        {/* IMAGE */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-blue-400 shadow-md">
             {preview ? (
               <img
                 src={preview}
@@ -94,47 +101,65 @@ export default function AddStudent() {
               </div>
             )}
           </div>
+
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleChange}
+            className="mt-4 text-sm file:mr-4 file:py-2 file:px-4
+            file:rounded-full file:border-0
+            file:text-sm file:font-semibold
+            file:bg-blue-50 file:text-blue-600
+            hover:file:bg-blue-100"
+          />
         </div>
 
-        {/* File Input */}
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleChange}
-          className="w-full mb-4 text-sm file:mr-4 file:py-2 file:px-4
-          file:rounded-full file:border-0
-          file:text-sm file:font-semibold
-          file:bg-emerald-50 file:text-emerald-600
-          hover:file:bg-emerald-100"
-        />
-
-        {/* Inputs */}
-        {["name", "age", "parentName", "contact"].map((field) => (
+        {/* INPUTS */}
+        <div className="space-y-4">
           <input
-            key={field}
-            name={field}
-            placeholder={
-              field === "parentName"
-                ? "Parent Name"
-                : field.charAt(0).toUpperCase() + field.slice(1)
-            }
+            name="name"
+            placeholder="Student Name"
             onChange={handleChange}
-            className="w-full mb-3 px-4 py-2.5 rounded-xl border border-gray-200 
-            focus:ring-2 focus:ring-emerald-400 focus:outline-none 
-            transition shadow-sm"
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 
+            focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
-        ))}
 
-        {/* Button */}
+          <input
+            name="age"
+            type="number"
+            placeholder="Age"
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 
+            focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          />
+
+          <input
+            name="parentName"
+            placeholder="Parent Name"
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 
+            focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          />
+
+          <input
+            name="contact"
+            placeholder="Contact Number"
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 
+            focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          />
+        </div>
+
+        {/* BUTTON */}
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`w-full py-3 rounded-xl font-semibold text-white shadow-md transition-all duration-200
+          className={`w-full mt-6 py-3 rounded-xl font-semibold text-white transition
           ${
             loading
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-emerald-500 hover:bg-emerald-600 active:scale-95"
+              : "bg-blue-500 hover:bg-blue-600 active:scale-95"
           }`}
         >
           {loading ? "Saving..." : "Save Student"}

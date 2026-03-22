@@ -1,85 +1,197 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-// ✅ FIXED: use backend from .env
-const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api/students`,
-});
-
-export default function Student() {
+export default function AdminStudentsPage() {
   const [students, setStudents] = useState([]);
-  const navigate = useNavigate();
+  const [loaded, setLoaded] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
+  const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+  const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  const getStudents = async () => {
+  const navigate = useNavigate();
+
+  // ✅ LIVE CLOCK
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // ✅ FETCH STUDENTS
+  useEffect(() => {
+    if (!loaded) {
+      axios
+        .get(`${API_URL}/api/students`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setStudents(res.data || []);
+          setLoaded(true);
+        })
+        .catch(() => {
+          toast.error("Failed to load students ❌");
+          setLoaded(true);
+        });
+    }
+  }, [loaded]);
+
+  // ✅ DELETE STUDENT
+  const deleteStudent = async (id) => {
+    if (!window.confirm("Delete this student?")) return;
+
     try {
-      const res = await api.get("/");
-      console.log(res.data);
-      setStudents(res.data);
-    } catch (err) {
-      console.error(err);
+      await axios.delete(`${API_URL}/api/students/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Student deleted 🗑️");
+      setShowModal(false);
+      setLoaded(false);
+    } catch {
+      toast.error("Delete failed ❌");
     }
   };
 
-  useEffect(() => {
-    getStudents();
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
-      <div className="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-lg">
+    <div className="w-full min-h-screen bg-blue-50 p-6">
 
-        <h2 className="text-3xl font-extrabold text-center mb-8 text-gray-800">
-          🎓 Student Management
-        </h2>
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-blue-700">
+          Students Management 🎓
+        </h1>
 
-        {user?.role === "admin" && (
-          <div className="flex justify-end mb-6">
+        <div className="flex items-center gap-3">
+
+          {/* ADD BUTTON */}
+          {user?.role === "admin" && (
             <button
               onClick={() => navigate("/admin/students/add")}
-              className="bg-green-500 hover:bg-green-600 transition text-white px-5 py-2 rounded-xl shadow-md"
+              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition shadow"
             >
               ➕ Add Student
             </button>
+          )}
+
+          {/* CLOCK */}
+          <div className="bg-white px-4 py-2 rounded-lg shadow text-sm text-gray-600">
+            {currentTime.toLocaleString()}
           </div>
-        )}
-
-        {students.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg">
-            No students found
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {students.map((s) => (
-              <div
-                key={s._id}
-                className="border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition bg-gray-50"
-              >
-                <p className="font-semibold text-lg text-gray-800">
-                  {s.name}
-                </p>
-
-                <p className="text-gray-600 mt-1">
-                  Age: <span className="font-medium">{s.age}</span>
-                </p>
-
-                {user?.role === "admin" && (
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/students/update/${s._id}`)
-                    }
-                    className="mt-3 bg-blue-500 hover:bg-blue-600 transition text-white px-4 py-1.5 rounded-lg shadow-sm"
-                  >
-                    ✏️ Update
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        </div>
       </div>
+
+      {/* TABLE */}
+      <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+
+        <table className="w-full">
+
+          {/* HEADER */}
+          <thead className="bg-blue-100 text-blue-800">
+            <tr>
+              <th className="p-4 text-left">Name</th>
+              <th>Age</th>
+              <th className="text-center">Actions</th>
+            </tr>
+          </thead>
+
+          {/* BODY */}
+          <tbody>
+            {students.length > 0 ? (
+              students.map((student) => (
+                <tr
+                  key={student._id}
+                  className="border-b hover:bg-blue-50 transition"
+                >
+                  <td className="p-4 font-medium">
+                    {student.name}
+                  </td>
+
+                  <td>{student.age}</td>
+
+                  <td className="text-center">
+                    <button
+                      onClick={() => {
+                        setSelectedStudent(student);
+                        setShowModal(true);
+                      }}
+                      className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
+                    >
+                      Manage
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="3"
+                  className="text-center py-6 text-gray-500"
+                >
+                  No students found
+                </td>
+              </tr>
+            )}
+          </tbody>
+
+        </table>
+      </div>
+
+      {/* MODAL */}
+      {showModal && selectedStudent && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+
+          <div className="bg-white w-[450px] rounded-2xl shadow-xl p-6 relative">
+
+            {/* CLOSE */}
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-black"
+            >
+              <IoMdClose size={22} />
+            </button>
+
+            <h2 className="text-xl font-bold text-blue-700 mb-4">
+              Student Details
+            </h2>
+
+            <div className="space-y-2 text-gray-700">
+              <p><b>Name:</b> {selectedStudent.name}</p>
+              <p><b>Age:</b> {selectedStudent.age}</p>
+            </div>
+
+            {/* ACTIONS */}
+            <div className="mt-6 space-y-3">
+
+              <button
+                onClick={() =>
+                  navigate(`/admin/students/update/${selectedStudent._id}`)
+                }
+                className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+              >
+                Update Student
+              </button>
+
+              <button
+                onClick={() => deleteStudent(selectedStudent._id)}
+                className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+              >
+                Delete Student
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
