@@ -44,7 +44,7 @@ export default function AdminGallery() {
         })),
       ]);
 
-      toast.success("Uploaded!");
+      toast.success("Images uploaded!");
     } catch {
       toast.error("Upload failed");
     }
@@ -66,7 +66,7 @@ export default function AdminGallery() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!date) return toast.error("Select date");
+    if (!date) return toast.error("Please select date");
 
     try {
       setSaving(true);
@@ -78,7 +78,7 @@ export default function AdminGallery() {
         conversationImages,
       });
 
-      toast.success("Saved!");
+      toast.success("Gallery saved!");
       setActivityDetails([]);
       setConversationImages([]);
       setDate("");
@@ -93,7 +93,7 @@ export default function AdminGallery() {
     <div className="min-h-screen bg-gray-100 flex justify-center p-6">
       <div className="w-full max-w-6xl bg-white p-8 rounded-2xl shadow-lg space-y-10">
 
-        <h2 className="text-3xl font-bold text-center">
+        <h2 className="text-3xl font-bold text-center text-gray-800">
           Gallery Manager
         </h2>
 
@@ -104,13 +104,13 @@ export default function AdminGallery() {
             type="date"
             value={date}
             onChange={handleDateChange}
-            className="w-full border p-3 rounded-lg"
+            className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
           {/* ================= DRAG DROP ================= */}
           <div
             {...getRootProps()}
-            className="border-2 border-dashed p-8 text-center rounded-xl cursor-pointer hover:border-blue-400"
+            className="border-2 border-dashed p-8 text-center rounded-xl cursor-pointer hover:border-blue-400 transition"
           >
             <input {...getInputProps()} />
             <p className="text-gray-500">
@@ -129,7 +129,7 @@ export default function AdminGallery() {
               <Reorder.Item
                 key={item.url}
                 value={item}
-                className="bg-white border p-4 rounded-xl shadow"
+                className="bg-white border border-gray-200 p-5 rounded-xl shadow hover:shadow-md transition"
               >
                 {/* IMAGE */}
                 <img
@@ -139,39 +139,52 @@ export default function AdminGallery() {
                 />
 
                 {/* TITLE */}
-                <input
-                  type="text"
-                  placeholder="Title"
-                  className="w-full mt-3 p-2 border rounded"
-                  value={item.title}
-                  onChange={(e) => {
-                    const updated = [...activityDetails];
-                    updated[i].title = e.target.value;
-                    setActivityDetails(updated);
-                  }}
-                />
+                <div className="mt-3">
+                  <label className="block text-sm font-semibold text-gray-600 mb-1">
+                    Activity Title
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter title"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                    value={item.title}
+                    onChange={(e) => {
+                      const updated = [...activityDetails];
+                      updated[i].title = e.target.value;
+                      setActivityDetails(updated);
+                    }}
+                  />
+                </div>
 
-                {/* DESCRIPTION + LIMIT */}
-                <textarea
-                  maxLength={120}
-                  placeholder="Description (max 120 chars)"
-                  className="w-full mt-2 p-2 border rounded"
-                  value={item.description}
-                  onChange={(e) => {
-                    const updated = [...activityDetails];
-                    updated[i].description = e.target.value;
-                    setActivityDetails(updated);
-                  }}
-                />
-                <p className="text-xs text-gray-400 text-right">
-                  {item.description.length}/120
-                </p>
+                {/* SMALL DESCRIPTION */}
+                <div className="mt-3">
+                  <label className="block text-sm font-semibold text-gray-600 mb-1">
+                    Short Description
+                  </label>
+
+                  <textarea
+                    maxLength={80}
+                    rows="2"
+                    placeholder="Short description (max 80 chars)"
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none resize-none text-sm"
+                    value={item.description}
+                    onChange={(e) => {
+                      const updated = [...activityDetails];
+                      updated[i].description = e.target.value;
+                      setActivityDetails(updated);
+                    }}
+                  />
+
+                  <p className="text-xs text-gray-400 text-right mt-1">
+                    {item.description.length}/80
+                  </p>
+                </div>
 
                 {/* REMOVE */}
                 <button
                   type="button"
                   onClick={() => removeActivity(i)}
-                  className="text-red-500 mt-2 text-sm"
+                  className="mt-3 text-red-500 text-sm hover:underline"
                 >
                   Remove
                 </button>
@@ -180,14 +193,17 @@ export default function AdminGallery() {
           </Reorder.Group>
 
           {/* SUBMIT */}
-          <button className="w-full bg-blue-500 text-white py-3 rounded-lg">
-            {saving ? "Saving..." : "Save"}
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-semibold text-lg transition"
+          >
+            {saving ? "Saving..." : "Save Gallery"}
           </button>
 
         </form>
       </div>
 
-      {/* ================= IMAGE MODAL ================= */}
+      {/* ================= IMAGE PREVIEW MODAL ================= */}
       {previewImage && (
         <div
           className="fixed inset-0 bg-black/70 flex justify-center items-center z-50"
