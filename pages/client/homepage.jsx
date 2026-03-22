@@ -22,7 +22,7 @@ export default function HomePage({ lang, setLang }) {
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg">
               {lang === "en"
                 ? "🌱 UDAYA LAMAUYANA Montessori"
-                : "🌱 උදය ලමායන මොන්ටිසෝරි"}
+                : "🌱 උදය ලමා උයන මොන්ටිසෝරි"}
             </h1>
 
             <p className="text-lg md:text-xl mb-6 leading-relaxed text-gray-200">
@@ -188,7 +188,7 @@ export default function HomePage({ lang, setLang }) {
           <p>
             {lang === "en"
               ? "© 2026 UDAYA LAMAUYANA Montessori. All rights reserved."
-              : "© 2026 උදය ලමායන මොන්ටිසෝරි. සියලු හිමිකම් සුරක්ෂිතයි."}
+              : "© 2026 උදය ලමා උයන  මොන්ටිසෝරි. සියලු හිමිකම් සුරක්ෂිතයි."}
           </p>
         </footer>
 
