@@ -1,52 +1,59 @@
 import React, { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useDropzone } from "react-dropzone";
+import { Reorder } from "framer-motion";
 import { uploadMultipleMedia } from "../../meadiaupload";
 
 export default function AdminGallery() {
+  const [date, setDate] = useState("");
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
 
   const [activityDetails, setActivityDetails] = useState([]);
   const [conversationImages, setConversationImages] = useState([]);
 
+  const [previewImage, setPreviewImage] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  // ================= UPLOAD =================
-  const handleMultipleUpload = async (files, type) => {
-    if (!files || files.length === 0) {
-      return toast.error("No files selected");
-    }
+  // ================= DATE =================
+  const handleDateChange = (e) => {
+    const value = e.target.value;
+    setDate(value);
 
+    const [y, m] = value.split("-");
+    setYear(y);
+    setMonth(
+      new Date(y, m - 1).toLocaleString("default", {
+        month: "long",
+      })
+    );
+  };
+
+  // ================= DRAG DROP =================
+  const onDropActivity = async (acceptedFiles) => {
     try {
-      const fileArray = Array.from(files);
-      const validFiles = fileArray.filter((file) =>
-        file.type.startsWith("image/")
-      );
+      const urls = await uploadMultipleMedia(acceptedFiles);
 
-      const urls = await uploadMultipleMedia(validFiles);
+      setActivityDetails((prev) => [
+        ...prev,
+        ...urls.map((url) => ({
+          url,
+          title: "",
+          description: "",
+        })),
+      ]);
 
-      if (type === "activity") {
-        setActivityDetails((prev) => [
-          ...prev,
-          ...urls.map((url) => ({
-            url,
-            title: "",
-            description: "",
-          })),
-        ]);
-      } else {
-        setConversationImages((prev) =>
-          Array.from(new Set([...prev, ...urls]))
-        );
-      }
-
-      toast.success("Images uploaded!");
-    } catch (err) {
-      console.error(err);
+      toast.success("Uploaded!");
+    } catch {
       toast.error("Upload failed");
     }
   };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: onDropActivity,
+    accept: { "image/*": [] },
+  });
 
   // ================= REMOVE =================
   const removeActivity = (index) => {
@@ -55,17 +62,11 @@ export default function AdminGallery() {
     setActivityDetails(updated);
   };
 
-  const removeConversation = (index) => {
-    const updated = [...conversationImages];
-    updated.splice(index, 1);
-    setConversationImages(updated);
-  };
-
-  // ================= SAVE =================
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!year || !month) return toast.error("Please select date");
+    if (!date) return toast.error("Select date");
 
     try {
       setSaving(true);
@@ -73,15 +74,14 @@ export default function AdminGallery() {
       await axios.post(`${import.meta.env.VITE_API_URL}/api/gallery`, {
         year,
         month,
-        activityImages: activityDetails, // ✅ includes title & description
-        conversationImages, // ✅ images only
+        activityImages: activityDetails,
+        conversationImages,
       });
 
-      toast.success("Gallery saved!");
-
-      // reset
+      toast.success("Saved!");
       setActivityDetails([]);
       setConversationImages([]);
+      setDate("");
     } catch {
       toast.error("Save failed");
     } finally {
@@ -90,138 +90,115 @@ export default function AdminGallery() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-6">
-      <div className="w-full max-w-4xl bg-white p-8 rounded-2xl shadow-lg space-y-6">
+    <div className="min-h-screen bg-gray-100 flex justify-center p-6">
+      <div className="w-full max-w-6xl bg-white p-8 rounded-2xl shadow-lg space-y-10">
 
-        <h2 className="text-2xl font-bold text-center text-gray-800">
-          Upload Gallery
+        <h2 className="text-3xl font-bold text-center">
+          Gallery Manager
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-10">
 
           {/* DATE */}
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-600">
-              Select Month
-            </label>
-            <input
-              type="month"
-              className="border border-gray-300 rounded-lg p-2 w-full"
-              onChange={(e) => {
-                const [y, m] = e.target.value.split("-");
-                setYear(y);
-                setMonth(
-                  new Date(y, m - 1).toLocaleString("default", {
-                    month: "long",
-                  })
-                );
-              }}
-            />
+          <input
+            type="date"
+            value={date}
+            onChange={handleDateChange}
+            className="w-full border p-3 rounded-lg"
+          />
+
+          {/* ================= DRAG DROP ================= */}
+          <div
+            {...getRootProps()}
+            className="border-2 border-dashed p-8 text-center rounded-xl cursor-pointer hover:border-blue-400"
+          >
+            <input {...getInputProps()} />
+            <p className="text-gray-500">
+              Drag & drop images OR click to upload
+            </p>
           </div>
 
-          {/* ================= ACTIVITY ================= */}
-          <div>
-            <label className="block mb-2 font-semibold text-gray-700">
-              Activity Images (with Title & Description)
-            </label>
+          {/* ================= DRAG SORT ================= */}
+          <Reorder.Group
+            axis="y"
+            values={activityDetails}
+            onReorder={setActivityDetails}
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {activityDetails.map((item, i) => (
+              <Reorder.Item
+                key={item.url}
+                value={item}
+                className="bg-white border p-4 rounded-xl shadow"
+              >
+                {/* IMAGE */}
+                <img
+                  src={item.url}
+                  className="h-40 w-full object-cover rounded-lg cursor-pointer"
+                  onClick={() => setPreviewImage(item.url)}
+                />
 
-            <input
-              type="file"
-              multiple
-              className="w-full border p-2 rounded-lg"
-              onChange={(e) =>
-                handleMultipleUpload(e.target.files, "activity")
-              }
-            />
+                {/* TITLE */}
+                <input
+                  type="text"
+                  placeholder="Title"
+                  className="w-full mt-3 p-2 border rounded"
+                  value={item.title}
+                  onChange={(e) => {
+                    const updated = [...activityDetails];
+                    updated[i].title = e.target.value;
+                    setActivityDetails(updated);
+                  }}
+                />
 
-            <div className="grid md:grid-cols-2 gap-4 mt-4">
-              {activityDetails.map((item, i) => (
-                <div key={i} className="bg-gray-50 p-3 rounded-lg shadow-sm">
+                {/* DESCRIPTION + LIMIT */}
+                <textarea
+                  maxLength={120}
+                  placeholder="Description (max 120 chars)"
+                  className="w-full mt-2 p-2 border rounded"
+                  value={item.description}
+                  onChange={(e) => {
+                    const updated = [...activityDetails];
+                    updated[i].description = e.target.value;
+                    setActivityDetails(updated);
+                  }}
+                />
+                <p className="text-xs text-gray-400 text-right">
+                  {item.description.length}/120
+                </p>
 
-                  <img
-                    src={item.url}
-                    className="h-32 w-full object-cover rounded-md"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Title"
-                    className="w-full mt-2 p-2 border rounded"
-                    value={item.title}
-                    onChange={(e) => {
-                      const updated = [...activityDetails];
-                      updated[i].title = e.target.value;
-                      setActivityDetails(updated);
-                    }}
-                  />
-
-                  <textarea
-                    placeholder="Short Description"
-                    className="w-full mt-2 p-2 border rounded"
-                    rows="2"
-                    value={item.description}
-                    onChange={(e) => {
-                      const updated = [...activityDetails];
-                      updated[i].description = e.target.value;
-                      setActivityDetails(updated);
-                    }}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => removeActivity(i)}
-                    className="mt-2 text-red-500 text-sm"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ================= CONVERSATION ================= */}
-          <div>
-            <label className="block mb-2 font-semibold text-gray-700">
-              Conversation Images (No Title)
-            </label>
-
-            <input
-              type="file"
-              multiple
-              className="w-full border p-2 rounded-lg"
-              onChange={(e) =>
-                handleMultipleUpload(e.target.files, "conversation")
-              }
-            />
-
-            <div className="grid grid-cols-4 gap-3 mt-3">
-              {conversationImages.map((img, i) => (
-                <div key={i} className="relative">
-                  <img
-                    src={img}
-                    className="h-20 w-full object-cover rounded-lg"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeConversation(i)}
-                    className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1 rounded"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+                {/* REMOVE */}
+                <button
+                  type="button"
+                  onClick={() => removeActivity(i)}
+                  className="text-red-500 mt-2 text-sm"
+                >
+                  Remove
+                </button>
+              </Reorder.Item>
+            ))}
+          </Reorder.Group>
 
           {/* SUBMIT */}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold"
-          >
-            {saving ? "Saving..." : "Save Gallery"}
+          <button className="w-full bg-blue-500 text-white py-3 rounded-lg">
+            {saving ? "Saving..." : "Save"}
           </button>
+
         </form>
       </div>
+
+      {/* ================= IMAGE MODAL ================= */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 bg-black/70 flex justify-center items-center z-50"
+          onClick={() => setPreviewImage(null)}
+        >
+          <img
+            src={previewImage}
+            className="max-h-[80vh] rounded-xl shadow-lg"
+          />
+        </div>
+      )}
     </div>
   );
 }
