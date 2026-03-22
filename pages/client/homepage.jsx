@@ -44,57 +44,57 @@ export default function HomePage({ lang, setLang }) {
           <div className="grid md:grid-cols-3 gap-8">
             {(lang === "en"
               ? [
-                  {
-                    title: "🧘 Discipline & Values",
-                    text: "Guidance inspired by Buddhist principles for good behavior and respect.",
-                  },
-                  {
-                    title: "🧠 Early Education Excellence",
-                    text: "Strong foundation in learning and problem-solving.",
-                  },
-                  {
-                    title: "🎨 Creative Development",
-                    text: "Activities that build creativity and confidence.",
-                  },
-                  {
-                    title: "❤️ Loving Environment",
-                    text: "A warm and caring atmosphere for every child.",
-                  },
-                  {
-                    title: "🛡️ Safety & Protection",
-                    text: "Secure and supervised environment.",
-                  },
-                  {
-                    title: "🌱 Moral Guidance",
-                    text: "Blessings and guidance under Ven. Weraduwe Siri Jothi Thero.",
-                  },
-                ]
+                {
+                  title: "🧘 Discipline & Values",
+                  text: "Guidance inspired by Buddhist principles for good behavior and respect.",
+                },
+                {
+                  title: "🧠 Early Education Excellence",
+                  text: "Strong foundation in learning and problem-solving.",
+                },
+                {
+                  title: "🎨 Creative Development",
+                  text: "Activities that build creativity and confidence.",
+                },
+                {
+                  title: "❤️ Loving Environment",
+                  text: "A warm and caring atmosphere for every child.",
+                },
+                {
+                  title: "🛡️ Safety & Protection",
+                  text: "Secure and supervised environment.",
+                },
+                {
+                  title: "🌱 Moral Guidance",
+                  text: "Blessings and guidance under Ven. Weraduwe Siri Jothi Thero.",
+                },
+              ]
               : [
-                  {
-                    title: "🧘 විනය හා වටිනාකම්",
-                    text: "හොඳ හැසිරීම් සහ ගරුත්වය වර්ධනය කිරීම.",
-                  },
-                  {
-                    title: "🧠 මුල් අධ්‍යාපනය",
-                    text: "ශක්තිමත් ඉගෙනීමේ පදනමක්.",
-                  },
-                  {
-                    title: "🎨 නිර්මාණශීලී වර්ධනය",
-                    text: "සೃජනශීලීත්වය සහ විශ්වාසය වර්ධනය කිරීම.",
-                  },
-                  {
-                    title: "❤️ ආදරණීය පරිසරය",
-                    text: "සෑම දරුවෙකුටම ආදරණීය පරිසරයක්.",
-                  },
-                  {
-                    title: "🛡️ ආරක්ෂාව",
-                    text: "ආරක්ෂිත සහ පරීක්ෂිත පරිසරයක්.",
-                  },
-                  {
-                    title: "🌱 නෙත්තික මගපෙන්වීම",
-                    text: "සිරි ජෝති හිමියන්ගේ මගපෙන්වීම.",
-                  },
-                ]
+                {
+                  title: "🧘 විනය හා වටිනාකම්",
+                  text: "හොඳ හැසිරීම් සහ ගරුත්වය වර්ධනය කිරීම.",
+                },
+                {
+                  title: "🧠 මුල් අධ්‍යාපනය",
+                  text: "ශක්තිමත් ඉගෙනීමේ පදනමක්.",
+                },
+                {
+                  title: "🎨 නිර්මාණශීලී වර්ධනය",
+                  text: "සೃජනශීලීත්වය සහ විශ්වාසය වර්ධනය කිරීම.",
+                },
+                {
+                  title: "❤️ ආදරණීය පරිසරය",
+                  text: "සෑම දරුවෙකුටම ආදරණීය පරිසරයක්.",
+                },
+                {
+                  title: "🛡️ ආරක්ෂාව",
+                  text: "ආරක්ෂිත සහ පරීක්ෂිත පරිසරයක්.",
+                },
+                {
+                  title: "🌱 නෙත්තික මගපෙන්වීම",
+                  text: "සිරි ජෝති හිමියන්ගේ මගපෙන්වීම.",
+                },
+              ]
             ).map((item, i) => (
               <div key={i} className="bg-white shadow-lg p-6 rounded-2xl">
                 <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
@@ -174,9 +174,11 @@ export default function HomePage({ lang, setLang }) {
               : "ඔබේ දරුවාට දීප්තිමත් අනාගතයක් ලබාදෙන්න 🌟"}
           </h2>
           <p className="mb-6">
-            {lang === "en"
-              ? "Join UDAYA LAMAUYANA Montessori today."
-              : "අදම අපට එක්වන්න."}
+            <Link to="/contact" className="underline">
+              {lang === "en"
+                ? "Join UDAYA LAMAUYANA Montessori today."
+                : "අදම අපට එක්වන්න."}
+            </Link>
           </p>
           <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold">
             {lang === "en" ? "Contact Us" : "අප අමතන්න"}
