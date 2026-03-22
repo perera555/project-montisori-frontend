@@ -5,6 +5,11 @@ import Navbar from "../../src/assets/components/navbar";
 export default function ClientGallery() {
   const [gallery, setGallery] = useState([]);
 
+  // ✅ SLIDER STATE
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+
   const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const API_URL = `${BASE_URL}/api/gallery`;
 
@@ -13,14 +18,9 @@ export default function ClientGallery() {
     try {
       const res = await axios.get(API_URL);
 
-      console.log("Gallery Data:", res.data); // ✅ DEBUG
-
       const data = res.data.list || res.data || [];
 
-      if (!Array.isArray(data)) {
-        console.error("Invalid data format");
-        return;
-      }
+      if (!Array.isArray(data)) return;
 
       setGallery(data);
     } catch (err) {
@@ -31,6 +31,27 @@ export default function ClientGallery() {
   useEffect(() => {
     fetchGallery();
   }, []);
+
+  // ================= SLIDER FUNCTIONS =================
+  const openSlider = (images, index) => {
+    setSelectedImages(images);
+    setCurrentIndex(index);
+    setIsOpen(true);
+  };
+
+  const closeSlider = () => setIsOpen(false);
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) =>
+      prev === selectedImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) =>
+      prev === 0 ? selectedImages.length - 1 : prev - 1
+    );
+  };
 
   // ================= GROUP BY YEAR =================
   const grouped = (gallery || []).reduce((acc, item) => {
@@ -45,7 +66,6 @@ export default function ClientGallery() {
       <Navbar />
 
       <div className="p-6 mt-[70px] max-w-6xl mx-auto">
-
         <h1 className="text-4xl text-center mb-10 font-bold">
           Gallery
         </h1>
@@ -59,7 +79,6 @@ export default function ClientGallery() {
 
         {Object.entries(grouped).map(([year, items]) => (
           <div key={year} className="mb-12">
-
             <h2 className="text-2xl mb-6 border-l-4 border-blue-500 pl-3 font-semibold">
               {year}
             </h2>
@@ -94,7 +113,8 @@ export default function ClientGallery() {
                             <img
                               src={imageUrl}
                               alt=""
-                              className="h-44 w-full object-cover"
+                              onClick={() => openSlider(item.activityImages, j)}
+                              className="h-44 w-full object-cover cursor-pointer"
                             />
 
                             {/* TEXT */}
@@ -138,7 +158,10 @@ export default function ClientGallery() {
                             key={j}
                             src={imageUrl}
                             alt=""
-                            className="h-32 w-full object-cover rounded-lg shadow"
+                            onClick={() =>
+                              openSlider(item.conversationImages, j)
+                            }
+                            className="h-32 w-full object-cover rounded-lg shadow cursor-pointer"
                           />
                         );
                       })
@@ -153,6 +176,46 @@ export default function ClientGallery() {
           </div>
         ))}
       </div>
+
+      {/* ================= SLIDER MODAL ================= */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+
+          {/* CLOSE */}
+          <button
+            onClick={closeSlider}
+            className="absolute top-5 right-5 text-white text-3xl"
+          >
+            ✕
+          </button>
+
+          {/* PREV */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-5 text-white text-4xl"
+          >
+            ❮
+          </button>
+
+          {/* IMAGE */}
+          <img
+            src={
+              selectedImages[currentIndex]?.url?.startsWith("http")
+                ? selectedImages[currentIndex].url
+                : `${BASE_URL}${selectedImages[currentIndex]?.url}`
+            }
+            className="max-h-[80%] max-w-[90%] rounded-lg"
+          />
+
+          {/* NEXT */}
+          <button
+            onClick={nextSlide}
+            className="absolute right-5 text-white text-4xl"
+          >
+            ❯
+          </button>
+        </div>
+      )}
     </div>
   );
 }
