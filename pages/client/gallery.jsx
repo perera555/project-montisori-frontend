@@ -1,221 +1,176 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../../src/assets/components/navbar";
+import { Link } from "react-router-dom";
 
-export default function ClientGallery() {
-  const [gallery, setGallery] = useState([]);
+export default function HomePage({ lang, setLang }) {
 
-  // ✅ SLIDER STATE
-  const [selectedImages, setSelectedImages] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
+  // ================= ANNOUNCEMENT STATE =================
+  const [announcement, setAnnouncement] = useState(null);
 
   const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-  const API_URL = `${BASE_URL}/api/gallery`;
+  const API_URL = `${BASE_URL}/api/announcements`;
 
-  // ================= FETCH =================
-  const fetchGallery = async () => {
+  // ================= FETCH ANNOUNCEMENT =================
+  const fetchAnnouncement = async () => {
     try {
       const res = await axios.get(API_URL);
 
-      const data = res.data.list || res.data || [];
+      // Adjust depending on your backend response
+      const data = res.data?.list || res.data || [];
 
-      if (!Array.isArray(data)) return;
-
-      setGallery(data);
+      if (Array.isArray(data) && data.length > 0) {
+        setAnnouncement(data[0]); // show latest
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Announcement fetch error:", err);
     }
   };
 
   useEffect(() => {
-    fetchGallery();
+    fetchAnnouncement();
   }, []);
 
-  // ================= SLIDER FUNCTIONS =================
-  const openSlider = (images, index) => {
-    setSelectedImages(images);
-    setCurrentIndex(index);
-    setIsOpen(true);
-  };
-
-  const closeSlider = () => setIsOpen(false);
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) =>
-      prev === selectedImages.length - 1 ? 0 : prev + 1
-    );
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) =>
-      prev === 0 ? selectedImages.length - 1 : prev - 1
-    );
-  };
-
-  // ================= GROUP BY YEAR =================
-  const grouped = (gallery || []).reduce((acc, item) => {
-    if (!item?.year) return acc;
-    acc[item.year] = acc[item.year] || [];
-    acc[item.year].push(item);
-    return acc;
-  }, {});
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Navbar />
+    <div>
+      <Navbar lang={lang} setLang={setLang} />
 
-      <div className="p-6 mt-[70px] max-w-6xl mx-auto">
-        <h1 className="text-4xl text-center mb-10 font-bold">
-          Gallery
-        </h1>
+      <div className="pt-[80px]">
 
-        {/* EMPTY */}
-        {Object.keys(grouped).length === 0 && (
-          <p className="text-center text-gray-400">
-            No gallery data found 😕
-          </p>
-        )}
+        {/* HERO SECTION */}
+        <section className="relative text-white text-center py-32 px-6 overflow-hidden">
+          <div className="absolute inset-0">
+            <img
+              src="https://images.unsplash.com/photo-1588072432836-e10032774350"
+              alt=""
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/50"></div>
+          </div>
 
-        {Object.entries(grouped).map(([year, items]) => (
-          <div key={year} className="mb-12">
-            <h2 className="text-2xl mb-6 border-l-4 border-blue-500 pl-3 font-semibold">
-              {year}
-            </h2>
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+              {lang === "en"
+                ? "🌱 UDAYA LAMAUYANA Montessori"
+                : "🌱 උදය ලමා උයන මොන්ටිසෝරි"}
+            </h1>
 
-            {items.map((item, i) => (
-              <div key={i} className="bg-white p-6 mb-8 rounded-xl shadow">
+            <p className="text-lg md:text-xl text-gray-200">
+              {lang === "en"
+                ? "Guided and supported by Ven. Weraduwe Siri Jothi Thero."
+                : "වෙන. වෙරදුවේ සිරි ජෝති හිමියන්ගේ මගපෙන්වීම යටතේ."}
+            </p>
+          </div>
+        </section>
 
-                {/* MONTH */}
-                <h3 className="mb-4 font-medium text-lg">
-                  {item.month}
-                </h3>
+        {/* ================= ANNOUNCEMENT (DYNAMIC) ================= */}
+        {announcement && (
+          <section className="bg-gradient-to-r from-yellow-100 via-white to-yellow-100 py-10 px-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white/80 backdrop-blur-md border border-yellow-200 shadow-xl rounded-2xl p-6 text-center relative overflow-hidden">
 
-                {/* ================= ACTIVITIES ================= */}
-                <div className="mb-8">
-                  <h4 className="font-semibold mb-4 text-lg">
-                    Activities
-                  </h4>
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-300 opacity-20 rounded-full blur-2xl"></div>
 
-                  <div className="grid md:grid-cols-3 gap-5">
-                    {item.activityImages?.length > 0 ? (
-                      item.activityImages.map((img, j) => {
-                        const imageUrl = img.url.startsWith("http")
-                          ? img.url
-                          : `${BASE_URL}${img.url}`;
+                <h2 className="text-2xl font-bold text-yellow-600 mb-3">
+                  📢 {lang === "en" ? "Announcement" : "📢 නිවේදනය"}
+                </h2>
 
-                        return (
-                          <div
-                            key={j}
-                            className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
-                          >
-                            {/* IMAGE */}
-                            <img
-                              src={imageUrl}
-                              alt=""
-                              onClick={() => openSlider(item.activityImages, j)}
-                              className="h-44 w-full object-cover cursor-pointer"
-                            />
+                {/* TITLE */}
+                {announcement.title && (
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    {announcement.title}
+                  </h3>
+                )}
 
-                            {/* TEXT */}
-                            <div className="p-3">
-                              {img.title && (
-                                <p className="font-semibold text-sm text-gray-800">
-                                  {img.title}
-                                </p>
-                              )}
+                {/* MESSAGE */}
+                <p className="text-gray-700 text-lg leading-relaxed">
+                  {announcement.message || announcement.description}
+                </p>
 
-                              {img.description && (
-                                <p className="text-xs text-gray-600 mt-1">
-                                  {img.description}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <p className="text-gray-400">No activity images</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* ================= MOMENTS ================= */}
-                <div>
-                  <h4 className="font-semibold mb-4 text-lg">
-                    Moments
-                  </h4>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {item.conversationImages?.length > 0 ? (
-                      item.conversationImages.map((img, j) => {
-                        const imageUrl = img.url.startsWith("http")
-                          ? img.url
-                          : `${BASE_URL}${img.url}`;
-
-                        return (
-                          <img
-                            key={j}
-                            src={imageUrl}
-                            alt=""
-                            onClick={() =>
-                              openSlider(item.conversationImages, j)
-                            }
-                            className="h-32 w-full object-cover rounded-lg shadow cursor-pointer"
-                          />
-                        );
-                      })
-                    ) : (
-                      <p className="text-gray-400">No images</p>
-                    )}
-                  </div>
+                {/* OPTIONAL BUTTON */}
+                <div className="mt-5">
+                  <Link to="/contact">
+                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-full font-semibold transition">
+                      {lang === "en"
+                        ? "Contact Us"
+                        : "අප අමතන්න"}
+                    </button>
+                  </Link>
                 </div>
 
               </div>
+            </div>
+          </section>
+        )}
+
+        {/* BENEFITS */}
+        <section className="py-16 px-6 max-w-6xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-10 text-gray-800">
+            {lang === "en"
+              ? "🌟 Benefits for Your Child"
+              : "🌟 ඔබේ දරුවාට ලැබෙන ප්‍රතිලාභ"}
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {(lang === "en"
+              ? [
+                  {
+                    title: "🧘 Discipline & Values",
+                    text: "Guidance inspired by Buddhist principles.",
+                  },
+                  {
+                    title: "🧠 Early Education",
+                    text: "Strong learning foundation.",
+                  },
+                  {
+                    title: "🎨 Creativity",
+                    text: "Build confidence and creativity.",
+                  },
+                ]
+              : [
+                  {
+                    title: "🧘 විනය",
+                    text: "හොඳ හැසිරීම් වර්ධනය.",
+                  },
+                  {
+                    title: "🧠 අධ්‍යාපනය",
+                    text: "ශක්තිමත් පදනමක්.",
+                  },
+                  {
+                    title: "🎨 නිර්මාණශීලීත්වය",
+                    text: "විශ්වාසය වර්ධනය.",
+                  },
+                ]
+            ).map((item, i) => (
+              <div key={i} className="bg-white shadow-lg p-6 rounded-2xl">
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <p className="text-gray-600">{item.text}</p>
+              </div>
             ))}
           </div>
-        ))}
+        </section>
+
+        {/* CTA */}
+        <section className="bg-blue-600 text-white text-center py-16 px-6">
+          <h2 className="text-3xl font-bold mb-4">
+            {lang === "en"
+              ? "Give Your Child a Bright Future 🌟"
+              : "ඔබේ දරුවාට දීප්තිමත් අනාගතයක්"}
+          </h2>
+
+          <Link to="/contact">
+            <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold">
+              {lang === "en" ? "Contact Us" : "අමතන්න"}
+            </button>
+          </Link>
+        </section>
+
+        {/* FOOTER */}
+        <footer className="bg-gray-900 text-white text-center py-6">
+          <p>© 2026 UDAYA LAMAUYANA Montessori</p>
+        </footer>
+
       </div>
-
-      {/* ================= SLIDER MODAL ================= */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-
-          {/* CLOSE */}
-          <button
-            onClick={closeSlider}
-            className="absolute top-5 right-5 text-white text-3xl"
-          >
-            ✕
-          </button>
-
-          {/* PREV */}
-          <button
-            onClick={prevSlide}
-            className="absolute left-5 text-white text-4xl"
-          >
-            ❮
-          </button>
-
-          {/* IMAGE */}
-          <img
-            src={
-              selectedImages[currentIndex]?.url?.startsWith("http")
-                ? selectedImages[currentIndex].url
-                : `${BASE_URL}${selectedImages[currentIndex]?.url}`
-            }
-            className="max-h-[80%] max-w-[90%] rounded-lg"
-          />
-
-          {/* NEXT */}
-          <button
-            onClick={nextSlide}
-            className="absolute right-5 text-white text-4xl"
-          >
-            ❯
-          </button>
-        </div>
-      )}
     </div>
   );
 }

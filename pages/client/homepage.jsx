@@ -34,6 +34,34 @@ export default function HomePage({ lang, setLang }) {
           </div>
         </section>
 
+        {/* ANNOUNCEMENT */}
+        <section className="bg-gradient-to-r from-yellow-100 via-white to-yellow-100 py-10 px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white/80 backdrop-blur-md border border-yellow-200 shadow-xl rounded-2xl p-6 text-center relative overflow-hidden">
+
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-300 opacity-20 rounded-full blur-2xl"></div>
+
+              <h2 className="text-2xl font-bold text-yellow-600 mb-3">
+                📢 {lang === "en" ? "Announcement" : "📢 නිවේදනය"}
+              </h2>
+
+              <p className="text-gray-700 text-lg leading-relaxed">
+                {lang === "en"
+                  ? "Admissions are now open for 2026! Limited seats available. Enroll your child today and secure a bright future."
+                  : "2026 සඳහා ඇතුළත් කිරීම් දැන් ආරම්භ වී ඇත! සීමිත ආසන ඇත. අදම ඔබේ දරුවා ඇතුළත් කරන්න."}
+              </p>
+
+              <div className="mt-5">
+                <Link to="/contact">
+                  <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-full font-semibold transition">
+                    {lang === "en" ? "Enroll Now" : "දැන් ලියාපදිංචි වන්න"}
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* BENEFITS */}
         <section className="py-16 px-6 max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-10 text-gray-800">
@@ -81,7 +109,7 @@ export default function HomePage({ lang, setLang }) {
                   },
                   {
                     title: "🎨 නිර්මාණශීලී වර්ධනය",
-                    text: "සೃජනශීලීත්වය සහ විශ්වාසය වර්ධනය කිරීම.",
+                    text: "සෘජනශීලීත්වය සහ විශ්වාසය වර්ධනය කිරීම.",
                   },
                   {
                     title: "❤️ ආදරණීය පරිසරය",
