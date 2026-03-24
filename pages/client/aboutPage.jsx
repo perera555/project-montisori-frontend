@@ -21,8 +21,8 @@ export default function AboutPage({ lang, setLang }) {
           <div className="relative z-10 max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
               {lang === "en"
-                ? "About UDAYA LAMAUYANA Montessori 🌱"
-                : "උදය ලමායන මොන්ටිසෝරි ගැන 🌱"}
+                ? "ABOUT UDAYA LAMAUYANA Pre School 🌱"
+                : "උදය ලමායන පෙර පාසල ගැන 🌱"}
             </h1>
             <p className="text-lg text-gray-200">
               {lang === "en"
@@ -40,8 +40,8 @@ export default function AboutPage({ lang, setLang }) {
             </h2>
             <p className="text-gray-600 leading-relaxed">
               {lang === "en"
-                ? "UDAYA LAMAUYANA Montessori is a place where children begin their journey of learning in a safe, loving, and inspiring environment. Guided by Ven. Weraduwe Siri Jothi Thero, we focus on building knowledge along with discipline, kindness, and respect."
-                : "උදය ලමායන මොන්ටිසෝරි යනු දරුවන්ට ආරක්ෂිත, ආදරණීය සහ ප්‍රේරණාත්මක පරිසරයකින් ඉගෙනීම ආරම්භ කරන ස්ථානයකි. වෙන. වෙරදුවේ සිරි ජෝති හිමියන්ගේ මගපෙන්වීම යටතේ අපි දැනුම, විනය, කරුණාව සහ ගරුත්වය වර්ධනය කරයි."}
+                ? "UDAYA LAMAUYANA Pre School is a place where children begin their journey of learning in a safe, loving, and inspiring environment."
+                : "උදය ලමායන පෙර පාසල යනු දරුවන්ට ආරක්ෂිත, ආදරණීය පරිසරයකින් ඉගෙනීම ආරම්භ කරන ස්ථානයකි."}
             </p>
           </div>
 
@@ -68,8 +68,8 @@ export default function AboutPage({ lang, setLang }) {
               </h3>
               <p className="text-gray-600">
                 {lang === "en"
-                  ? "To provide a strong educational foundation through Montessori methods while nurturing moral values, creativity, and independence."
-                  : "මොන්ටිසෝරි ක්‍රමය මඟින් ශක්තිමත් අධ්‍යාපන පදනමක් ලබාදීම සහ වටිනාකම්, නිර්මාණශීලීත්වය හා ස්වාධීනත්වය වර්ධනය කිරීම."}
+                  ? "To provide a strong educational foundation while nurturing moral values, creativity, and independence."
+                  : "ශක්තිමත් අධ්‍යාපන පදනමක් ලබාදීම සහ වටිනාකම් වර්ධනය කිරීම."}
               </p>
             </div>
 
@@ -86,8 +86,8 @@ export default function AboutPage({ lang, setLang }) {
               </h3>
               <p className="text-gray-600">
                 {lang === "en"
-                  ? "To raise confident, compassionate, and responsible individuals who contribute positively to society."
-                  : "සමාජයට යහපත් දායකත්වයක් ලබාදෙන විශ්වාසවන්ත, කරුණාවන්ත සහ වගකීම් සහිත පුද්ගලයන් ගොඩනැගීම."}
+                  ? "To raise confident, compassionate, and responsible individuals."
+                  : "වගකීම් සහිත පුද්ගලයන් ගොඩනැගීම."}
               </p>
             </div>
 
@@ -116,57 +116,11 @@ export default function AboutPage({ lang, setLang }) {
               </h2>
               <p className="text-gray-600 leading-relaxed">
                 {lang === "en"
-                  ? "Our approach combines Montessori education with Buddhist values. We believe early childhood is the most important stage of life. Through mindfulness and guided learning, we help children grow into balanced individuals."
-                  : "අපගේ ක්‍රමවේදය මොන්ටිසෝරි අධ්‍යාපනය හා බෞද්ධ වටිනාකම් එක් කරයි. මුල් ළමා අවධිය ජීවිතයේ වැදගත්ම කාලය බව අපි විශ්වාස කරමු."}
+                  ? "We believe early childhood is the most important stage of life."
+                  : "මුල් ළමා අවධිය ජීවිතයේ වැදගත්ම කාලයයි."}
               </p>
             </div>
 
-          </div>
-        </section>
-
-        {/* WHY CHOOSE US */}
-        <section className="py-16 px-6">
-          <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-10 text-gray-800">
-              {lang === "en" ? "Why Choose Us? 💡" : "අප තෝරාගත යුත්තේ ඇයි? 💡"}
-            </h2>
-
-            <div className="grid md:grid-cols-3 gap-8">
-
-              <div className="bg-white p-6 rounded-2xl shadow">
-                <h3 className="font-semibold text-lg text-green-600 mb-2">
-                  {lang === "en" ? "🌱 Holistic Development" : "🌱 සම්පූර්ණ වර්ධනය"}
-                </h3>
-                <p className="text-gray-600">
-                  {lang === "en"
-                    ? "We focus on mental, emotional, and social growth."
-                    : "මානසික, భావාත්මක සහ සමාජ වර්ධනය කෙරෙහි අවධානය යොමු කරයි."}
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-2xl shadow">
-                <h3 className="font-semibold text-lg text-blue-600 mb-2">
-                  {lang === "en" ? "🧠 Montessori Learning" : "🧠 මොන්ටිසෝරි ඉගෙනීම"}
-                </h3>
-                <p className="text-gray-600">
-                  {lang === "en"
-                    ? "Child-centered education that encourages independence."
-                    : "දරුවා මධ්‍යයේ ඇති ස්වාධීනත්වය ප්‍රවර්ධනය කරන අධ්‍යාපනය."}
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-2xl shadow">
-                <h3 className="font-semibold text-lg text-purple-600 mb-2">
-                  {lang === "en" ? "❤️ Caring Environment" : "❤️ ආදරණීය පරිසරය"}
-                </h3>
-                <p className="text-gray-600">
-                  {lang === "en"
-                    ? "A safe and loving place where every child is valued."
-                    : "සෑම දරුවෙකුටම වටිනාකමක් ලැබෙන ආරක්ෂිත හා ආදරණීය පරිසරයක්."}
-                </p>
-              </div>
-
-            </div>
           </div>
         </section>
 
@@ -183,76 +137,27 @@ export default function AboutPage({ lang, setLang }) {
             <div className="grid md:grid-cols-3 gap-8">
 
               <div className="bg-white p-6 rounded-2xl shadow">
-                <img src="https://images.unsplash.com/photo-1596495578065-6e0763fa1178" className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" />
-                <h3 className="font-semibold text-purple-600">Ven. Weraduwe Siri Jothi Thero</h3>
-                <p className="text-sm text-gray-500 mb-2">
-                  {lang === "en" ? "Spiritual Leader & Principal" : "ආධ්‍යාත්මික නායක හා ප්‍රධාන ආචාර්ය"}
-                </p>
-                <p className="text-gray-600 text-sm">
-                  {lang === "en"
-                    ? "Provides spiritual guidance and helps children develop discipline, mindfulness, and strong moral values."
-                    : "දරුවන්ට විනය සහ වටිනාකම් වර්ධනය කිරීමට මගපෙන්වයි."}
-                </p>
+                <img src="/images/m10.jpeg" className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" />
+                <h3 className="font-semibold text-purple-600">Principal</h3>
               </div>
 
               <div className="bg-white p-6 rounded-2xl shadow">
-                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956" className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" />
-                <h3 className="font-semibold text-blue-600">
-                  {lang === "en" ? "Mrs. Nadeesha Perera" : "නදීෂා පෙරේරා මහත්මිය"}
-                </h3>
-                <p className="text-sm text-gray-500 mb-2">
-                  {lang === "en" ? "Lead Montessori Teacher" : "ප්‍රධාන ගුරුවරිය"}
-                </p>
-                <p className="text-gray-600 text-sm">
-                  {lang === "en"
-                    ? "Encourages creativity, independence, and joyful learning."
-                    : "සೃජනශීලීත්වය සහ සතුටින් ඉගෙනීම ප්‍රවර්ධනය කරයි."}
-                </p>
+                <img src="/images/M11.jpeg" className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" />
+                <h3 className="font-semibold text-blue-600">Main Teacher</h3>
               </div>
 
               <div className="bg-white p-6 rounded-2xl shadow">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2" className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" />
-                <h3 className="font-semibold text-green-600">
-                  {lang === "en" ? "Miss. Sanduni Silva" : "සඳුනි සිල්වා"}
-                </h3>
-                <p className="text-sm text-gray-500 mb-2">
-                  {lang === "en" ? "Assistant Teacher" : "সহায়ක ගුරුවරිය"}
-                </p>
-                <p className="text-gray-600 text-sm">
-                  {lang === "en"
-                    ? "Supports children with care, patience, and attention."
-                    : "දරුවන්ට ආදරයෙන් සහාය දක්වයි."}
-                </p>
+                <img src="/images/M11.jpeg" className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" />
+                <h3 className="font-semibold text-green-600">Assistant Teacher</h3>
               </div>
 
             </div>
           </div>
         </section>
 
-        {/* CTA */}
-        <section className="bg-blue-600 text-white text-center py-16 px-6">
-          <h2 className="text-3xl font-bold mb-4">
-            {lang === "en"
-              ? "Join Our Montessori Family 🌟"
-              : "අපගේ මොන්ටිසෝරි පවුලට එක්වන්න 🌟"}
-          </h2>
-          <p className="mb-6">
-            {lang === "en"
-              ? "Give your child the best start in life with us."
-              : "ඔබේ දරුවාට හොඳම ආරම්භයක් ලබාදෙන්න."}
-          </p>
-          <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold">
-            {lang === "en" ? "Contact Us" : "අප අමතන්න"}
-          </button>
-        </section>
-
         {/* FOOTER */}
         <footer className="bg-gray-900 text-white text-center py-6">
-          <p>
-            {lang === "en"
-              ? "© 2026 UDAYA LAMAUYANA Montessori. All rights reserved."
-              : "© 2026 උදය ලමායන මොන්ටිසෝරි. සියලු හිමිකම් සුරක්ෂිතයි."}
-          </p>
+          <p>© 2026 UDAYA LAMAUYANA Pre School. All rights reserved.</p>
         </footer>
 
       </div>
