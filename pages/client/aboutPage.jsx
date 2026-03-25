@@ -1,7 +1,10 @@
 import Navbar from "../../src/assets/components/navbar";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function AboutPage({ lang, setLang }) {
+
+  const navigate = useNavigate();
 
   const fadeUp = {
     hidden: { opacity: 0, y: 60 },
@@ -38,8 +41,8 @@ export default function AboutPage({ lang, setLang }) {
             className="relative z-10 max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
               {lang === "en"
-                ? "About UDAYA LAMAUYANA Montessori 🌱"
-                : "උදය ලමායන මොන්ටිසෝරි ගැන 🌱"}
+                ? "About UDAYA LAMAUYANA Pre School 🌱"
+                : "උදය ලමායන පෙර පාසල ගැන 🌱"}
             </h1>
             <p className="text-lg text-gray-200">
               {lang === "en"
@@ -65,8 +68,10 @@ export default function AboutPage({ lang, setLang }) {
               {/* PRINCIPAL */}
               <motion.div variants={fadeLeft}
                 className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition hover:-translate-y-3">
-                <img src="https://images.unsplash.com/photo-1596495578065-6e0763fa1178"
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-purple-200" />
+                <img
+                  src="https://images.unsplash.com/photo-1604881991720-f91add269bed"
+                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-purple-200"
+                />
                 <h3 className="font-semibold text-purple-600 text-lg">
                   Ven. Weraduwe Siri Jothi Thero
                 </h3>
@@ -80,11 +85,13 @@ export default function AboutPage({ lang, setLang }) {
                 </p>
               </motion.div>
 
-              {/* MAIN */}
+              {/* MAIN TEACHER */}
               <motion.div variants={fadeUp}
                 className="bg-white p-6 rounded-2xl shadow-2xl border-4 border-blue-400 hover:-translate-y-4 transition">
-                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956"
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-blue-300" />
+                <img
+                  src="https://images.unsplash.com/photo-1544725176-7c40e5a2c9f9"
+                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-blue-300"
+                />
                 <h3 className="font-bold text-blue-700 text-xl">
                   {lang === "en" ? "Mrs. Dilhari Mhandiram" : "දිල්හාරි මහන්දිරම්"}
                 </h3>
@@ -101,8 +108,10 @@ export default function AboutPage({ lang, setLang }) {
               {/* ASSISTANT */}
               <motion.div variants={fadeRight}
                 className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition hover:-translate-y-3">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2"
-                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-green-200" />
+                <img
+                  src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
+                  className="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-green-200"
+                />
                 <h3 className="font-semibold text-green-600 text-lg">
                   {lang === "en" ? "Miss. Nipuni Wijerathna" : "නිපුනි විජේරත්න"}
                 </h3>
@@ -129,16 +138,25 @@ export default function AboutPage({ lang, setLang }) {
             </h2>
             <p className="text-gray-600">
               {lang === "en"
-                ? "A safe and loving place for early learning."
-                : "ආරක්ෂිත හා ආදරණීය ඉගෙනුම් පරිසරයක්."}
+                ? "Our Pre School was founded to provide a safe, loving, and inspiring environment where children can grow, learn, and explore with confidence."
+                : "අපගේ පෙර පාසල දරුවන්ට ආරක්ෂිත, ආදරණීය හා ප්‍රබෝධමත් ඉගෙනුම් පරිසරයක් ලබාදීමට ස්ථාපිත කරන ලදී."}
             </p>
           </motion.div>
 
           <motion.div variants={fadeRight} initial="hidden" whileInView="show">
             <h3 className="text-blue-600 font-semibold">🎯 Mission</h3>
-            <p className="mb-3">Strong foundation</p>
+            <p className="mb-3">
+              {lang === "en"
+                ? "To build a strong educational and moral foundation for every child."
+                : "සෑම දරුවෙකුටම ශක්තිමත් අධ්‍යාපනික හා නৈতিক පදනමක් ගොඩනැගීම."}
+            </p>
+
             <h3 className="text-green-600 font-semibold">🌟 Vision</h3>
-            <p>Responsible individuals</p>
+            <p>
+              {lang === "en"
+                ? "To nurture responsible, kind, and confident individuals for the future."
+                : "අනාගතයට වගකිවයුතු, කරුණාවන්ත සහ විශ්වාසවන්ත පුද්ගලයින් බිහිකිරීම."}
+            </p>
           </motion.div>
 
         </section>
@@ -161,8 +179,8 @@ export default function AboutPage({ lang, setLang }) {
               </h2>
               <p className="text-gray-600 leading-relaxed">
                 {lang === "en"
-                  ? "Our approach combines Montessori education with Buddhist values. We believe early childhood is the most important stage of life. Through mindfulness and guided learning, we help children grow into balanced individuals."
-                  : "අපගේ ක්‍රමවේදය මොන්ටිසෝරි හා බෞද්ධ වටිනාකම් එකතු කරමින්, සිහිබුද්ධිය සහ මගපෙන්වූ ඉගෙනීම මඟින් දරුවන් සමබර පුද්ගලයන් ලෙස වර්ධනය කරයි."}
+                  ? "At our Pre School, we believe every child is unique and full of potential. Our philosophy focuses on nurturing the whole child — mind, body, and character. We create a calm and supportive environment where children learn through play, creativity, and guided activities while developing respect, kindness, and discipline based on strong moral values."
+                  : "අපගේ පෙර පාසලේ දරුවෙකු සෑමදෙනාම විශේෂ බව විශ්වාස කරයි. දරුවන්ගේ මනස, ශරීරය සහ චරිතය සම්පූර්ණයෙන්ම වර්ධනය කිරීම අපගේ අරමුණයි."}
               </p>
             </motion.div>
 
@@ -173,12 +191,17 @@ export default function AboutPage({ lang, setLang }) {
         <section className="bg-blue-600 text-white text-center py-16 px-6">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show">
             <h2 className="text-3xl font-bold mb-4">
-              {lang === "en" ? "Join Our Montessori Family 🌟" : "එක්වන්න 🌟"}
+              {lang === "en" ? "Join Our Pre School Family 🌟" : "එක්වන්න 🌟"}
             </h2>
-            <motion.button whileHover={{ scale: 1.1 }}
-              className="bg-white text-blue-600 px-8 py-3 rounded-full">
+
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              onClick={() => navigate("/contact")}
+              className="bg-white text-blue-600 px-8 py-3 rounded-full"
+            >
               {lang === "en" ? "Contact Us" : "අමතන්න"}
             </motion.button>
+
           </motion.div>
         </section>
 
@@ -187,7 +210,7 @@ export default function AboutPage({ lang, setLang }) {
           <motion.div variants={fadeUp} initial="hidden" whileInView="show">
             <p>
               {lang === "en"
-                ? "© 2026 UDAYA LAMAUYANA Montessori. All rights reserved."
+                ? "© 2026 UDAYA LAMAUYANA Pre School. All rights reserved."
                 : "© 2026 සියලු හිමිකම් සුරක්ෂිතයි."}
             </p>
           </motion.div>
