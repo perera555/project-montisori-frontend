@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 export default function HomePage({ lang, setLang }) {
 
   const [announcement, setAnnouncement] = useState(null);
+  const [specialEvents, setSpecialEvents] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0); // ✅ slider
 
   const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const API_URL = `${BASE_URL}/api/announcements`;
@@ -13,15 +16,24 @@ export default function HomePage({ lang, setLang }) {
   const fetchAnnouncement = async () => {
     try {
       const res = await axios.get(API_URL);
-
       let data = [];
-
       if (Array.isArray(res.data)) data = res.data;
       else if (Array.isArray(res.data?.list)) data = res.data.list;
       else if (Array.isArray(res.data?.data)) data = res.data.data;
-
       if (data.length > 0) setAnnouncement(data[0]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  const fetchGalleryImages = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/gallery`);
+      let data = [];
+      if (Array.isArray(res.data)) data = res.data;
+      else if (Array.isArray(res.data.galleries)) data = res.data.galleries;
+      const images = data.flatMap(g => g.activityImages || []);
+      setSpecialEvents(images);
     } catch (err) {
       console.error(err);
     }
@@ -29,7 +41,23 @@ export default function HomePage({ lang, setLang }) {
 
   useEffect(() => {
     fetchAnnouncement();
+    fetchGalleryImages();
   }, []);
+
+  // ✅ AUTO SLIDER
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => prev === 3 ? 0 : prev + 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const galleryImages = [
+    "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9",
+    "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70",
+    "https://images.unsplash.com/photo-1588072432836-e10032774350",
+    "https://images.unsplash.com/photo-1600880292203-757bb62b4baf"
+  ];
 
   return (
     <div>
@@ -40,181 +68,188 @@ export default function HomePage({ lang, setLang }) {
         {/* HERO */}
         <section className="relative text-white text-center py-32 px-6 overflow-hidden">
           <div className="absolute inset-0">
-            <img src="https://images.unsplash.com/photo-1588072432836-e10032774350" className="w-full h-full object-cover" />
+            <img src={galleryImages[2]} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/50"></div>
           </div>
 
           <div className="relative z-10 max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
               {lang === "en"
-                ? "🌱 UDAYA LAMAUYANA Montessori"
-                : "🌱 උදය ලමා උයන මොන්ටිසෝරි"}
+                ? "🌱 UDAYA LAMAUYANA Pre School"
+                : "🌱 උදය ලමා උයන පෙර පාසල"}
             </h1>
           </div>
         </section>
 
-        {/* ANNOUNCEMENT */}
-        {announcement && (
-          <section className="py-12 px-6 bg-gradient-to-r from-yellow-50 via-white to-yellow-50">
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-white border-l-8 border-yellow-400 shadow-2xl rounded-2xl p-8 text-center">
-
-                <h2 className="text-3xl font-bold text-yellow-600 mb-3">
-                  📢 {lang === "en" ? "Important Announcement" : "වැදගත් නිවේදනය"}
-                </h2>
-
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">
-                  {announcement.title || "Latest Update"}
-                </h3>
-
-                <p className="text-gray-600 text-lg">
-                  {announcement.message || announcement.description}
-                </p>
-
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ================= 3D BENEFITS + PROGRAMS ================= */}
+        {/* ================= 4 COLUMN ================= */}
         <section className="py-24 px-6 bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-10">
 
-            {/* BENEFITS */}
-            <div>
-              <h2 className="text-4xl font-extrabold mb-10 text-gray-800">
-                {lang === "en"
-                  ? "🌟 Benefits for Your Child"
-                  : "🌟 ඔබේ දරුවාට ලැබෙන ප්‍රතිලාභ"}
+            {/* ⭐ PRINCIPAL BENEFITS */}
+            <div className="bg-yellow-50 p-6 rounded-2xl shadow-2xl border-4 border-yellow-400 transform hover:-translate-y-3 hover:rotate-1 transition duration-300">
+              <h2 className="text-3xl font-extrabold mb-6 text-yellow-700 text-center">
+                ⭐ {lang==="en"?"Principal Benefits":"ප්‍රධාන ප්‍රතිලාභ"}
               </h2>
 
-              <div className="space-y-6">
-                {(lang === "en"
-                  ? [
-                      "Discipline & Values",
-                      "Early Education Excellence",
-                      "Creative Development",
-                      "Loving Environment",
-                      "Safety & Protection",
-                      "Moral Guidance",
-                    ]
-                  : [
-                      "විනය හා වටිනාකම්",
-                      "මුල් අධ්‍යාපනය",
-                      "නිර්මාණශීලී වර්ධනය",
-                      "ආදරණීය පරිසරය",
-                      "ආරක්ෂාව",
-                      "නෙත්තික මගපෙන්වීම",
-                    ]
-                ).map((item, i) => (
-                  <div
-                    key={i}
-                    className="bg-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition duration-300 flex items-center gap-4 border border-gray-100"
-                  >
-                    <div className="w-10 h-10 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-full font-bold shadow">
-                      ✔
-                    </div>
-                    <span className="text-lg font-semibold text-gray-700">
-                      {item}
-                    </span>
+              <img src={galleryImages[3]} className="rounded-xl mb-4"/>
+
+              <div className="space-y-4 text-sm leading-relaxed">
+                {(lang==="en"?[
+                  "There is no admission fee required to enroll your child in our preschool.",
+                  "Free school uniforms are provided to every child.",
+                  "All essential school books are given completely free of charge.",
+                  "Nutritious meals are provided free of charge on selected days.",
+                  "Educational trips and outdoor learning activities are organized regularly.",
+                  "Every child receives a special birthday gift from the school.",
+                  "A complete set of books and a school bag are provided in the first year.",
+                  "Special benefits and celebrations are arranged for Children’s Day.",
+                  "Each child receives a savings benefit of Rs.1000 at the end of the year."
+                ]:[
+                  "දරුවා ඇතුළත් කිරීම සඳහා කිසිදු ගාස්තුවක් අය නොකෙරේ.",
+                  "සෑම දරුවෙකුටම නිල ඇඳුම් නොමිලේ ලබා දේ.",
+                  "පාසල් පොත් සියල්ලම නොමිලේ සපයනු ලැබේ.",
+                  "පෝෂණීය ආහාර නියමිත දිනවල නොමිලේ ලබා දේ.",
+                  "අධ්‍යාපන චාරිකා සහ බාහිර ක්‍රියාකාරකම් සංවිධානය කරයි.",
+                  "සෑම දරුවෙකුටම උපන්දිනයට විශේෂ තෑග්ගක් ලබා දේ.",
+                  "පළමු වසර සඳහා පොත් සහ පාසල් බෑගයක් ලබා දේ.",
+                  "ළමා දිනයට විශේෂ වැඩසටහන් සකස් කරයි.",
+                  "වසර අවසානයේ රු.1000 ඉතිරිකිරීමක් ලබා දේ."
+                ]).map((item,i)=>(
+                  <div key={i} className="bg-white p-4 rounded-xl shadow hover:scale-105 transition">
+                    ✔ {item}
                   </div>
                 ))}
               </div>
             </div>
 
             {/* PROGRAMS */}
-            <div>
-              <h2 className="text-4xl font-extrabold mb-10 text-gray-800">
-                {lang === "en"
-                  ? "🎓 Our Programs"
-                  : "🎓 අපගේ වැඩසටහන්"}
+            <div className="text-center bg-white p-6 rounded-2xl shadow-xl transform hover:-translate-y-3 hover:-rotate-1 transition duration-300">
+              <h2 className="text-3xl font-extrabold mb-6 text-blue-700">
+                🎓 {lang==="en"?"Programs":"වැඩසටහන්"}
               </h2>
 
-              <div className="space-y-6">
+              <img src={galleryImages[1]} className="rounded-xl mb-4"/>
 
-                <div className="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-3 transition duration-300 border border-gray-100">
-                  <h3 className="text-green-600 text-xl font-bold mb-2">
-                    {lang === "en"
-                      ? "🌱 Early Exploration"
-                      : "🌱 මුල් අත්දැකීම්"}
-                  </h3>
-                  <p className="text-gray-600">
-                    {lang === "en"
-                      ? "Hands-on learning through play and curiosity"
-                      : "ක්‍රීඩා මඟින් ලෝකය හඳුනාගැනීම"}
-                  </p>
+              <div className="space-y-4">
+                <div className="bg-white p-6 rounded-xl shadow hover:scale-105 transition">
+                  {lang==="en"?"Learning through play activities":"ක්‍රීඩා මඟින් ඉගෙනීම"}
                 </div>
-
-                <div className="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-3 transition duration-300 border border-gray-100">
-                  <h3 className="text-blue-600 text-xl font-bold mb-2">
-                    {lang === "en"
-                      ? "🧠 Cognitive Development"
-                      : "🧠 බුද්ධි වර්ධනය"}
-                  </h3>
-                  <p className="text-gray-600">
-                    {lang === "en"
-                      ? "Develop thinking and problem-solving skills"
-                      : "ගැටලු විසඳීමේ හැකියාව වර්ධනය කිරීම"}
-                  </p>
+                <div className="bg-white p-6 rounded-xl shadow hover:scale-105 transition">
+                  {lang==="en"?"Developing thinking and problem-solving skills":"සිතීමේ හැකියාව වර්ධනය කිරීම"}
                 </div>
-
-                <div className="bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-3 transition duration-300 border border-gray-100">
-                  <h3 className="text-purple-600 text-xl font-bold mb-2">
-                    {lang === "en"
-                      ? "🎨 Creative Arts"
-                      : "🎨 නිර්මාණශීලී කලාව"}
-                  </h3>
-                  <p className="text-gray-600">
-                    {lang === "en"
-                      ? "Art, music and storytelling activities"
-                      : "කලා සහ සංගීත ක්‍රියාකාරකම්"}
-                  </p>
+                <div className="bg-white p-6 rounded-xl shadow hover:scale-105 transition">
+                  {lang==="en"?"Creative arts, music and storytelling":"නිර්මාණශීලී කලාව සහ සංගීතය"}
                 </div>
+              </div>
+            </div>
 
+            {/* BENEFITS */}
+            <div className="bg-white p-6 rounded-2xl shadow-xl transform hover:-translate-y-3 hover:rotate-1 transition duration-300">
+              <h2 className="text-3xl font-extrabold mb-6 text-green-700">
+                🌟 {lang==="en"?"Benefits":"ප්‍රතිලාභ"}
+              </h2>
+
+              <img src={galleryImages[0]} className="rounded-xl mb-4"/>
+
+              <div className="space-y-4">
+                {(lang==="en"?[
+                  "Children develop discipline and good behavior.",
+                  "Creativity and imagination are enhanced.",
+                  "Early education builds a strong foundation.",
+                  "Safe and caring learning environment is ensured."
+                ]:[
+                  "දරුවන්ට විනය සහ හොඳ හැසිරීම වර්ධනය වේ.",
+                  "නිර්මාණශීලීත්වය වර්ධනය වේ.",
+                  "මුල් අධ්‍යාපනය ශක්තිමත් පදනමක් සපයයි.",
+                  "ආරක්ෂිත පරිසරයක් ලබා දේ."
+                ]).map((item,i)=>(
+                  <div key={i} className="bg-white p-4 rounded-xl shadow hover:scale-105 transition">
+                    ✔ {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ANNOUNCEMENT */}
+            <div className="bg-red-50 p-6 rounded-2xl shadow-2xl border-4 border-red-400 transform hover:-translate-y-3 hover:-rotate-1 transition duration-300">
+              <h2 className="text-3xl font-extrabold mb-6 text-red-700 text-center">
+                📢 {lang==="en"?"Announcement":"නිවේදනය"}
+              </h2>
+
+              <img src={galleryImages[2]} className="rounded-xl mb-4"/>
+
+              <div className="bg-white p-4 rounded-xl shadow text-center">
+                {announcement ? announcement.message : "No announcements"}
               </div>
             </div>
 
           </div>
         </section>
 
-        {/* GALLERY */}
-        <section className="py-16 px-6 max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">
-            {lang === "en"
-              ? "📸 Activities & Moments"
-              : "📸 ක්‍රියාකාරකම් සහ මතක"}
+        {/* SPECIAL EVENTS (PRO SLIDER) */}
+        <section className="py-20 px-6 bg-yellow-50">
+          <h2 className="text-3xl font-bold text-center mb-10">
+            🎉 {lang==="en"?"Special Events":"විශේෂ අවස්ථා"}
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9" className="h-40 w-full object-cover rounded-xl" />
-            <img src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70" className="h-40 w-full object-cover rounded-xl" />
-            <img src="https://images.unsplash.com/photo-1588072432836-e10032774350" className="h-40 w-full object-cover rounded-xl" />
-            <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf" className="h-40 w-full object-cover rounded-xl" />
+          <div className="relative max-w-6xl mx-auto">
+
+            <button onClick={()=>setCurrentIndex(prev=>prev===0?3:prev-1)}
+              className="absolute left-0 top-1/2 bg-white p-3 rounded-full shadow z-10">◀</button>
+
+            <button onClick={()=>setCurrentIndex(prev=>prev===3?0:prev+1)}
+              className="absolute right-0 top-1/2 bg-white p-3 rounded-full shadow z-10">▶</button>
+
+            <div className="overflow-hidden">
+              <div className="flex transition-transform duration-500"
+                style={{ transform: `translateX(-${currentIndex * 260}px)` }}>
+
+                {(specialEvents.length > 0 ? specialEvents.slice(-4) : galleryImages).map((img,i)=>(
+                  <div key={i}
+                    className="min-w-[250px] mx-2 bg-white rounded-xl shadow-lg hover:-translate-y-2 hover:shadow-2xl transition cursor-pointer"
+                    onClick={()=>setSelectedImage(img.url || img)}>
+                    <img src={img.url || img} className="h-40 w-full object-cover rounded-t-xl"/>
+                    <div className="p-3 text-center font-semibold">Event {i+1}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="text-center mt-6">
+              <Link to="/gallery">
+                <button className="bg-blue-600 text-white px-6 py-2 rounded-full shadow hover:scale-105 transition">
+                  View Full Gallery
+                </button>
+              </Link>
+            </div>
+
           </div>
+
+          {selectedImage && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+              onClick={()=>setSelectedImage(null)}>
+              <img src={selectedImage} className="max-h-[90%] max-w-[90%] rounded-xl"/>
+            </div>
+          )}
         </section>
 
         {/* CTA */}
-        <section className="bg-blue-600 text-white text-center py-16 px-6">
+        <section className="bg-blue-600 text-white text-center py-16">
           <h2 className="text-3xl font-bold mb-4">
-            {lang === "en"
-              ? "Give Your Child a Bright Future 🌟"
-              : "ඔබේ දරුවාට දීප්තිමත් අනාගතයක් ලබාදෙන්න 🌟"}
+            {lang==="en"?"Bright Future 🌟":"දීප්තිමත් අනාගතයක් 🌟"}
           </h2>
-
           <Link to="/contact">
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold">
-              {lang === "en" ? "Contact Us" : "අප අමතන්න"}
+            <button className="bg-white text-blue-600 px-6 py-2 rounded-full shadow hover:scale-105 transition">
+              {lang==="en"?"Contact":"අමතන්න"}
             </button>
           </Link>
         </section>
 
         {/* FOOTER */}
-        <footer className="bg-gray-900 text-white text-center py-6">
-          <p>
-            {lang === "en"
-              ? "© 2026 UDAYA LAMAUYANA Montessori"
-              : "© 2026 උදය ලමා උයන මොන්ටිසෝරි"}
-          </p>
+        <footer className="bg-gray-900 text-white text-center py-8">
+          {lang==="en"
+            ? "© 2026 UDAYA LAMAUYANA Pre School"
+            : "© 2026 උදය ලමා උයන පෙර පාසල"}
         </footer>
 
       </div>
