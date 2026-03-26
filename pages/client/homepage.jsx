@@ -68,12 +68,17 @@ export default function HomePage({ lang, setLang }) {
   }, [testimonials]);
 
   // ✅ AUTO SLIDER
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev === 3 ? 0 : prev + 1));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+useEffect(() => {
+  const interval = setInterval(() => {
+    const list = specialEvents.length > 0 ? specialEvents : galleryImages;
+
+    setCurrentIndex(prev =>
+      prev === list.length - 1 ? 0 : prev + 1
+    );
+  }, 4000);
+
+  return () => clearInterval(interval);
+}, [specialEvents]);
 
   const galleryImages = [
     "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9",
@@ -87,25 +92,56 @@ export default function HomePage({ lang, setLang }) {
       <Navbar lang={lang} setLang={setLang} />
 
       <div className="pt-[80px]">
-        {/* HERO */}
-        <section className="relative text-white text-center py-32 px-6 overflow-hidden">
-          <div className="absolute inset-0">
-            <img
-              src={galleryImages[2]}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-black/50"></div>
-          </div>
+   {/* HERO IMAGE SLIDER */}
+<section className="relative text-white text-center h-[60vh] md:h-[80vh] lg:h-screen px-6 overflow-hidden">
 
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-              {lang === "en"
-                ? "🌱 UDAYA LAMAUYANA Pre School"
-                : "🌱 උදය ලමා උයන පෙර පාසල"}
-            </h1>
-          </div>
-        </section>
+  {/* BACKGROUND SLIDER */}
+  <div className="absolute inset-0">
+    {(specialEvents.length > 0 ? specialEvents : galleryImages).map((img, i) => (
+      <img
+        key={i}
+        src={img.url || img}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+          i === currentIndex ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    ))}
 
+    {/* DARK OVERLAY */}
+    <div className="absolute inset-0 bg-black/50"></div>
+  </div>
+
+  {/* CONTENT */}
+  <div className="relative z-10 max-w-3xl mx-auto flex flex-col justify-center items-center h-full">
+    
+    <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+      {lang === "en"
+        ? "🌱 UDAYA LAMAUYANA Pre School"
+        : "🌱 උදය ලමා උයන පෙර පාසල"}
+    </h1>
+
+    <p className="text-lg mt-4">
+      {lang === "en"
+        ? "A joyful place for early learning"
+        : "ළමා සංවර්ධනයට සතුටුදායක පරිසරයක්"}
+    </p>
+
+  </div>
+
+  {/* DOT INDICATORS */}
+  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+    {(specialEvents.length > 0 ? specialEvents : galleryImages).map((_, i) => (
+      <div
+        key={i}
+        onClick={() => setCurrentIndex(i)}
+        className={`w-3 h-3 rounded-full cursor-pointer ${
+          i === currentIndex ? "bg-white" : "bg-white/50"
+        }`}
+      />
+    ))}
+  </div>
+
+</section>
         {/* ================= 4 COLUMN ================= */}
         <section className="py-24 px-6 bg-gradient-to-b from-gray-50 to-white">
           <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-10">
