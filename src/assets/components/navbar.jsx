@@ -68,6 +68,11 @@ export default function Navbar({ lang, setLang }) {
         <Link to="/contact" className="hover:text-yellow-300">
           {lang === "en" ? "Contact" : "සම්බන්ධ වන්න"}
         </Link>
+
+        {/* ⭐ ADDED TESTIMONIALS */}
+        <Link to="/testimonials" className="hover:text-yellow-300">
+          {lang === "en" ? "Testimonials" : "අදහස්"}
+        </Link>
       </div>
 
       {/* RIGHT */}
@@ -154,6 +159,12 @@ export default function Navbar({ lang, setLang }) {
         <Link to="/contact" onClick={() => setIsOpen(false)}
           className="py-3 px-3 rounded-md hover:bg-blue-600 hover:text-white">
           {lang === "en" ? "Contact" : "සම්බන්ධ වන්න"}
+        </Link>
+
+        {/* ⭐ ADDED TESTIMONIALS */}
+        <Link to="/testimonials" onClick={() => setIsOpen(false)}
+          className="py-3 px-3 rounded-md hover:bg-blue-600 hover:text-white">
+          {lang === "en" ? "Testimonials" : "අදහස්"}
         </Link>
 
       </div>

@@ -7,6 +7,7 @@ import {
   Megaphone,
   LogOut,
   Home,
+  MessageSquare // ✅ ADD ICON
 } from "lucide-react";
 
 export default function Sidebar({ logout }) {
@@ -20,6 +21,9 @@ export default function Sidebar({ logout }) {
     { name: "Teachers", path: "/admin/teachers", icon: <UserCheck size={18} /> },
     { name: "Gallery", path: "/admin/gallery", icon: <Image size={18} /> },
     { name: "Announcements", path: "/admin/announcements", icon: <Megaphone size={18} /> },
+
+    // ✅ ADD THIS LINE
+    { name: "Testimonials", path: "/admin/testimonials", icon: <MessageSquare size={18} /> },
   ];
 
   return (

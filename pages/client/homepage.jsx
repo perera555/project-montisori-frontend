@@ -7,6 +7,7 @@ export default function HomePage({ lang, setLang }) {
 
   const [announcement, setAnnouncement] = useState(null);
   const [specialEvents, setSpecialEvents] = useState([]);
+  const [testimonials, setTestimonials] = useState([]); // ✅ ADDED
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0); // ✅ slider
 
@@ -38,12 +39,24 @@ export default function HomePage({ lang, setLang }) {
       console.error(err);
     }
   };
+  /* ================= FETCH TESTIMONIALS ================= */
+  const fetchTestimonials = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/testimonials`);
+      console.log("HOME TESTIMONIALS:", res.data); // DEBUG
+      setTestimonials(res.data || []);
+    } catch (err) {
+      console.error("Testimonials error:", err);
+    }
+  };
 
+  /* ================= USE EFFECT ================= */
   useEffect(() => {
     fetchAnnouncement();
     fetchGalleryImages();
+    fetchTestimonials(); // ✅ THIS WAS MISSING (MAIN FIX)
   }, []);
-
+ 
   // ✅ AUTO SLIDER
   useEffect(() => {
     const interval = setInterval(() => {
@@ -186,49 +199,43 @@ export default function HomePage({ lang, setLang }) {
           </div>
         </section>
 
-        {/* SPECIAL EVENTS (PRO SLIDER) */}
+        {/* SPECIAL EVENTS */}
         <section className="py-20 px-6 bg-yellow-50">
           <h2 className="text-3xl font-bold text-center mb-10">
             🎉 {lang==="en"?"Special Events":"විශේෂ අවස්ථා"}
           </h2>
 
           <div className="relative max-w-6xl mx-auto">
-
-            <button onClick={()=>setCurrentIndex(prev=>prev===0?3:prev-1)}
-              className="absolute left-0 top-1/2 bg-white p-3 rounded-full shadow z-10">◀</button>
-
-            <button onClick={()=>setCurrentIndex(prev=>prev===3?0:prev+1)}
-              className="absolute right-0 top-1/2 bg-white p-3 rounded-full shadow z-10">▶</button>
-
             <div className="overflow-hidden">
-              <div className="flex transition-transform duration-500"
-                style={{ transform: `translateX(-${currentIndex * 260}px)` }}>
-
+              <div className="flex transition-transform duration-500">
                 {(specialEvents.length > 0 ? specialEvents.slice(-4) : galleryImages).map((img,i)=>(
-                  <div key={i}
-                    className="min-w-[250px] mx-2 bg-white rounded-xl shadow-lg hover:-translate-y-2 hover:shadow-2xl transition cursor-pointer"
-                    onClick={()=>setSelectedImage(img.url || img)}>
+                  <div key={i} className="min-w-[250px] mx-2 bg-white rounded-xl shadow-lg">
                     <img src={img.url || img} className="h-40 w-full object-cover rounded-t-xl"/>
-                    <div className="p-3 text-center font-semibold">Event {i+1}</div>
                   </div>
                 ))}
               </div>
             </div>
-
-            <div className="text-center mt-6">
-              <Link to="/gallery">
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-full shadow hover:scale-105 transition">
-                  View Full Gallery
-                </button>
-              </Link>
-            </div>
-
           </div>
+        </section>
 
-          {selectedImage && (
-            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-              onClick={()=>setSelectedImage(null)}>
-              <img src={selectedImage} className="max-h-[90%] max-w-[90%] rounded-xl"/>
+    {/* ✅ TESTIMONIALS */}
+        <section className="py-20 px-6 bg-white">
+          <h2 className="text-3xl font-bold text-center mb-10">
+            💬 {lang==="en"?"What Parents Say":"මව්පිය අදහස්"}
+          </h2>
+
+          {!Array.isArray(testimonials) || testimonials.length === 0 ? (
+            <p className="text-center text-gray-500">
+              {lang==="en"?"No testimonials yet":"තවම අදහස් නොමැත"}
+            </p>
+          ) : (
+            <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+              {testimonials.map((t, i)=>(
+                <div key={t._id || i} className="bg-gray-50 p-6 rounded shadow">
+                  <p>"{t.message}"</p>
+                  <b>— {t.name}</b>
+                </div>
+              ))}
             </div>
           )}
         </section>
@@ -239,7 +246,7 @@ export default function HomePage({ lang, setLang }) {
             {lang==="en"?"Bright Future 🌟":"දීප්තිමත් අනාගතයක් 🌟"}
           </h2>
           <Link to="/contact">
-            <button className="bg-white text-blue-600 px-6 py-2 rounded-full shadow hover:scale-105 transition">
+            <button className="bg-white text-blue-600 px-6 py-2 rounded-full shadow">
               {lang==="en"?"Contact":"අමතන්න"}
             </button>
           </Link>
@@ -247,9 +254,7 @@ export default function HomePage({ lang, setLang }) {
 
         {/* FOOTER */}
         <footer className="bg-gray-900 text-white text-center py-8">
-          {lang==="en"
-            ? "© 2026 UDAYA LAMAUYANA Pre School"
-            : "© 2026 උදය ලමා උයන පෙර පාසල"}
+          © 2026 UDAYA LAMAUYANA Pre School
         </footer>
 
       </div>
